@@ -1,0 +1,449 @@
+Name:         servicemeshoperator
+Namespace:    default
+Labels:       catalog=redhat-operators
+              catalog-namespace=openshift-marketplace
+              operatorframework.io/arch.amd64=supported
+              operatorframework.io/arch.ppc64le=supported
+              operatorframework.io/arch.s390x=supported
+              operatorframework.io/os.linux=supported
+              provider=Red Hat, Inc.
+              provider-url=
+Annotations:  <none>
+API Version:  packages.operators.coreos.com/v1
+Kind:         PackageManifest
+Metadata:
+  Creation Timestamp:  2023-02-23T05:29:32Z
+Spec:
+Status:
+  Catalog Source:               redhat-operators
+  Catalog Source Display Name:  Red Hat Operators
+  Catalog Source Namespace:     openshift-marketplace
+  Catalog Source Publisher:     Red Hat
+  Channels:
+    Current CSV:  servicemeshoperator.v2.3.1
+    Current CSV Desc:
+      Annotations:
+        Alm - Examples:  [
+  {
+    "apiVersion": "maistra.io/v2",
+    "kind": "ServiceMeshControlPlane",
+    "metadata": {
+      "name": "basic",
+      "namespace": "control-plane-namespace"
+    },
+    "spec": {
+      "version": "v2.3",
+      "tracing": {
+        "type": "Jaeger",
+        "sampling": 10000
+      },
+      "policy": {
+         "type": "Istiod"
+      },
+      "telemetry": {
+         "type": "Istiod"
+      },
+      "addons": {
+        "jaeger": {
+          "install": {
+            "storage": {
+              "type": "Memory"
+            }
+          }
+        },
+        "prometheus": {
+          "enabled": true
+        },
+        "kiali": {
+          "enabled": true
+        },
+        "grafana": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  {
+    "apiVersion": "maistra.io/v1",
+    "kind": "ServiceMeshMemberRoll",
+    "metadata": {
+      "name": "default",
+      "namespace": "control-plane-namespace"
+    },
+    "spec": {
+      "members": [
+        "your-project",
+        "another-of-your-projects" 
+      ]
+    }
+  },
+  {
+    "apiVersion": "maistra.io/v1",
+    "kind": "ServiceMeshMember",
+    "metadata": {
+      "name": "default",
+      "namespace": "application-namespace"
+    },
+    "spec": {
+      "controlPlaneRef": {
+        "name": "basic",
+        "namespace": "control-plane-namespace"
+      }
+    }
+  }
+]
+        Capabilities:                                    Seamless Upgrades
+        Categories:                                      OpenShift Optional, Integration & Delivery
+        Certified:                                       false
+        Container Image:                                 registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:de34c50c3b67468056c3d8bd18c575da696efb7657989724714af294859df14d
+        Created At:                                      2022-11-22T18:41:15EST
+        Description:                                     The OpenShift Service Mesh Operator enables you to install, configure, and manage an instance of Red Hat OpenShift Service Mesh. OpenShift Service Mesh is based on the open source Istio project.
+        olm.skipRange:                                   >=1.0.2 <2.3.1-0
+        operators.openshift.io/infrastructure-features:  ["Disconnected"]
+        operators.openshift.io/valid-subscription:       ["OpenShift Container Platform", "OpenShift Platform Plus"]
+        Repository:                                      https://github.com/maistra/istio-operator
+        Support:                                         Red Hat, Inc.
+      Apiservicedefinitions:
+      Customresourcedefinitions:
+        Owned:
+          Description:   An Istio control plane installation
+          Display Name:  Istio Service Mesh Control Plane
+          Kind:          ServiceMeshControlPlane
+          Name:          servicemeshcontrolplanes.maistra.io
+          Version:       v2
+          Description:   Marks the containing namespace as a member of the referenced Service Mesh
+          Display Name:  Istio Service Mesh Member
+          Kind:          ServiceMeshMember
+          Name:          servicemeshmembers.maistra.io
+          Version:       v1
+          Description:   A list of namespaces in Service Mesh
+          Display Name:  Istio Service Mesh Member Roll
+          Kind:          ServiceMeshMemberRoll
+          Name:          servicemeshmemberrolls.maistra.io
+          Version:       v1
+      Description:       Red Hat OpenShift Service Mesh is a platform that provides behavioral insight and operational control over a service mesh, providing a uniform way to connect, secure, and monitor microservice applications.
+
+### Overview
+
+Red Hat OpenShift Service Mesh, based on the open source [Istio](https://istio.io/) project, adds a transparent layer on existing
+distributed applications without requiring any changes to the service code. You add Red Hat OpenShift Service Mesh
+support to services by deploying a special sidecar proxy throughout your environment that intercepts all network
+communication between microservices. You configure and manage the service mesh using the control plane features.
+
+Red Hat OpenShift Service Mesh provides an easy way to create a network of deployed services that provides discovery,
+load balancing, service-to-service authentication, failure recovery, metrics, and monitoring. A service mesh also
+provides more complex operational functionality, including A/B testing, canary releases, rate limiting, access
+control, and end-to-end authentication.
+
+### Core Capabilities
+
+Red Hat OpenShift Service Mesh supports uniform application of a number of key capabilities across a network of services:
+
++ **Traffic Management** - Control the flow of traffic and API calls between services, make calls more reliable,
+  and make the network more robust in the face of adverse conditions.
+
++ **Service Identity and Security** - Provide services in the mesh with a verifiable identity and provide the
+  ability to protect service traffic as it flows over networks of varying degrees of trustworthiness.
+
++ **Policy Enforcement** - Apply organizational policy to the interaction between services, ensure access policies
+  are enforced and resources are fairly distributed among consumers. Policy changes are made by configuring the
+  mesh, not by changing application code.
+
++ **Telemetry** - Gain understanding of the dependencies between services and the nature and flow of traffic between
+  them, providing the ability to quickly identify issues.
+
+### Joining Projects Into a Mesh
+
+Once an instance of Red Hat OpenShift Service Mesh has been installed, it will only exercise control over services within its own
+project.  Other projects may be added into the mesh using one of two methods:
+
+1. A **ServiceMeshMember** resource may be created in other projects to add those projects into the mesh.  The
+  **ServiceMeshMember** specifies a reference to the **ServiceMeshControlPlane** object that was used to install
+  the control plane.  The user creating the **ServiceMeshMember** resource must have permission to *use* the
+  **ServiceMeshControlPlane** object.  The adminstrator for the project containing the control plane can grant
+  individual users or groups the *use* permissions.
+
+2. A **ServiceMeshMemberRoll** resource may be created in the project containing the control plane.  This resource
+  contains a single *members* list of all the projects that should belong in the mesh.  The resource must be named
+  *default*.  The user creating the resource must have *edit* or *admin* permissions for all projects in the
+  *members* list.
+
+### More Information
+
+* [Documentation](https://docs.openshift.com/container-platform/latest/service_mesh/v2x/servicemesh-release-notes.html)
+* [Bugs](https://issues.redhat.com/projects/OSSM)
+      Display Name:  Red Hat OpenShift Service Mesh
+      Install Modes:
+        Supported:  false
+        Type:       OwnNamespace
+        Supported:  false
+        Type:       SingleNamespace
+        Supported:  false
+        Type:       MultiNamespace
+        Supported:  true
+        Type:       AllNamespaces
+      Keywords:
+        istio
+        maistra
+        servicemesh
+      Links:
+        Name:  Red Hat OpenShift Service Mesh
+        URL:   https://docs.openshift.com/container-platform/latest/service_mesh/v2x/servicemesh-release-notes.html
+        Name:  Istio
+        URL:   https://istio.io/
+        Name:  Operator Source Code
+        URL:   https://github.com/Maistra/istio-operator
+        Name:  Bugs
+        URL:   https://issues.redhat.com/projects/OSSM
+      Maintainers:
+        Email:   istio-feedback@redhat.com
+        Name:    Red Hat, OpenShift Service Mesh
+      Maturity:  alpha
+      Provider:
+        Name:  Red Hat, Inc.
+      Related Images:
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:8c8008d46d0a68a2b71599391721132fe56fc36c922909afcbbb30fd5314314c
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:83dac7a5efd60d399f3ca0cc322727f88c2f9d93837e39c8800ed0d4ceeca01e
+        registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:e65dde4675091224404e1fef46097a604bc013519c4a0c1cd717519e73a67249
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:12284ec4fd6a02cfa82574469d022493688169ea09348ff1fd0b6170663b2956
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:e614e9aa8e786a3ed31df6eacf6cf1ad556add4b272f61cdca7576da6cced838
+        registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:de34c50c3b67468056c3d8bd18c575da696efb7657989724714af294859df14d
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:1be67785c051c48313a88e5e1ed5ee2de0d90169d5845457adad7c58dfc659fa
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:c3ed6ee1d9a5efc6e620b423b77e3112d868980dfc373406fab54c2109f713df
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:e1638e9b1c36b48220ac8bbe208ef0f2d59d184b89e0388a2b73d8c0da11946c
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:da30fbe4ced00bb88cd525740c64500fdd18263617fdec477a590264e8d2b45f
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:a3f23302c832e418e55821328d859396f3fa79c5b8b08623251b33c0841ba892
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:a4b5f4632e98938b8822827f1c0cc8dea6ee42d8357e68617d3750c5e51de55c
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:b6b75f32f1148f830abf1951eb71d8c55fe51cdbe1d6fb8176cdcd622d6eb4e3
+        registry.redhat.io/openshift-service-mesh/mixer-rhel8@sha256:37b20c87bca153bcf435ffeb71b1b0e75ba190bae14d198c196993c5c48a64ec
+        registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:b33be47b398992631dfac3cd7824dec732daefa8f18cf59bd4c96271853d5127
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:12a2436fa98384cc7dd054c1ed586742f623a11c9bbc47e7fd67aab847dc8430
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:aa06b4a1971f90500296c9249dd496c6d84193a6b82f5b406c1c6eeb5b37e7f5
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:98d83602207d3a6fcfb670b1368a3c3dafa233ad9b607ee95a708206cebae4c6
+        registry.redhat.io/openshift-service-mesh/proxy-init-rhel7@sha256:ee45a4a595ed491ce318d88dd90e0308c59131c67598afc7c67da601f3e5fb92
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:5c0eacb3024dab93e376c2edc60a02b066b62de5f40d81628d80ecd4f4a7dc4b
+        registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:dd12fbe10644a92cb9506af14779f20e63a8544502da2029e31fede2ab03a42a
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:6b337ff07a029a414f786786291adfa5a3718f44ec56cf8f20144abb2eb3ddc3
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:161b3438a666469b230602b85d5c207f0f225210b5ba18c6ee7b9ae08127af23
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:3fc0d5abea6d9b25040d74b8899aa7e5ac4e4ae1a3244e6fca467c0fef78a47f
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:e7acaa5d4a7f265cba1ad4f53859833390c5da1af31bb8546a5ae19f064a7dde
+        registry.redhat.io/openshift-service-mesh/3scale-istio-adapter-rhel8@sha256:2a15cb70a8a3290467f552821b50730fa7eaf6339f4f0fd9032cf2fe12d5c602
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:8471869e66a98bd44c9730bb50d82827a6c17a68cdd6cb8fdaeeee6eccf92029
+      Version:    2.3.1-0
+    Name:         stable
+    Current CSV:  servicemeshoperator.v2.3.1
+    Current CSV Desc:
+      Annotations:
+        Alm - Examples:  [
+  {
+    "apiVersion": "maistra.io/v2",
+    "kind": "ServiceMeshControlPlane",
+    "metadata": {
+      "name": "basic",
+      "namespace": "control-plane-namespace"
+    },
+    "spec": {
+      "version": "v2.3",
+      "tracing": {
+        "type": "Jaeger",
+        "sampling": 10000
+      },
+      "policy": {
+         "type": "Istiod"
+      },
+      "telemetry": {
+         "type": "Istiod"
+      },
+      "addons": {
+        "jaeger": {
+          "install": {
+            "storage": {
+              "type": "Memory"
+            }
+          }
+        },
+        "prometheus": {
+          "enabled": true
+        },
+        "kiali": {
+          "enabled": true
+        },
+        "grafana": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  {
+    "apiVersion": "maistra.io/v1",
+    "kind": "ServiceMeshMemberRoll",
+    "metadata": {
+      "name": "default",
+      "namespace": "control-plane-namespace"
+    },
+    "spec": {
+      "members": [
+        "your-project",
+        "another-of-your-projects" 
+      ]
+    }
+  },
+  {
+    "apiVersion": "maistra.io/v1",
+    "kind": "ServiceMeshMember",
+    "metadata": {
+      "name": "default",
+      "namespace": "application-namespace"
+    },
+    "spec": {
+      "controlPlaneRef": {
+        "name": "basic",
+        "namespace": "control-plane-namespace"
+      }
+    }
+  }
+]
+        Capabilities:                                    Seamless Upgrades
+        Categories:                                      OpenShift Optional, Integration & Delivery
+        Certified:                                       false
+        Container Image:                                 registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:de34c50c3b67468056c3d8bd18c575da696efb7657989724714af294859df14d
+        Created At:                                      2022-11-22T18:41:15EST
+        Description:                                     The OpenShift Service Mesh Operator enables you to install, configure, and manage an instance of Red Hat OpenShift Service Mesh. OpenShift Service Mesh is based on the open source Istio project.
+        olm.skipRange:                                   >=1.0.2 <2.3.1-0
+        operators.openshift.io/infrastructure-features:  ["Disconnected"]
+        operators.openshift.io/valid-subscription:       ["OpenShift Container Platform", "OpenShift Platform Plus"]
+        Repository:                                      https://github.com/maistra/istio-operator
+        Support:                                         Red Hat, Inc.
+      Apiservicedefinitions:
+      Customresourcedefinitions:
+        Owned:
+          Description:   An Istio control plane installation
+          Display Name:  Istio Service Mesh Control Plane
+          Kind:          ServiceMeshControlPlane
+          Name:          servicemeshcontrolplanes.maistra.io
+          Version:       v2
+          Description:   Marks the containing namespace as a member of the referenced Service Mesh
+          Display Name:  Istio Service Mesh Member
+          Kind:          ServiceMeshMember
+          Name:          servicemeshmembers.maistra.io
+          Version:       v1
+          Description:   A list of namespaces in Service Mesh
+          Display Name:  Istio Service Mesh Member Roll
+          Kind:          ServiceMeshMemberRoll
+          Name:          servicemeshmemberrolls.maistra.io
+          Version:       v1
+      Description:       Red Hat OpenShift Service Mesh is a platform that provides behavioral insight and operational control over a service mesh, providing a uniform way to connect, secure, and monitor microservice applications.
+
+### Overview
+
+Red Hat OpenShift Service Mesh, based on the open source [Istio](https://istio.io/) project, adds a transparent layer on existing
+distributed applications without requiring any changes to the service code. You add Red Hat OpenShift Service Mesh
+support to services by deploying a special sidecar proxy throughout your environment that intercepts all network
+communication between microservices. You configure and manage the service mesh using the control plane features.
+
+Red Hat OpenShift Service Mesh provides an easy way to create a network of deployed services that provides discovery,
+load balancing, service-to-service authentication, failure recovery, metrics, and monitoring. A service mesh also
+provides more complex operational functionality, including A/B testing, canary releases, rate limiting, access
+control, and end-to-end authentication.
+
+### Core Capabilities
+
+Red Hat OpenShift Service Mesh supports uniform application of a number of key capabilities across a network of services:
+
++ **Traffic Management** - Control the flow of traffic and API calls between services, make calls more reliable,
+  and make the network more robust in the face of adverse conditions.
+
++ **Service Identity and Security** - Provide services in the mesh with a verifiable identity and provide the
+  ability to protect service traffic as it flows over networks of varying degrees of trustworthiness.
+
++ **Policy Enforcement** - Apply organizational policy to the interaction between services, ensure access policies
+  are enforced and resources are fairly distributed among consumers. Policy changes are made by configuring the
+  mesh, not by changing application code.
+
++ **Telemetry** - Gain understanding of the dependencies between services and the nature and flow of traffic between
+  them, providing the ability to quickly identify issues.
+
+### Joining Projects Into a Mesh
+
+Once an instance of Red Hat OpenShift Service Mesh has been installed, it will only exercise control over services within its own
+project.  Other projects may be added into the mesh using one of two methods:
+
+1. A **ServiceMeshMember** resource may be created in other projects to add those projects into the mesh.  The
+  **ServiceMeshMember** specifies a reference to the **ServiceMeshControlPlane** object that was used to install
+  the control plane.  The user creating the **ServiceMeshMember** resource must have permission to *use* the
+  **ServiceMeshControlPlane** object.  The adminstrator for the project containing the control plane can grant
+  individual users or groups the *use* permissions.
+
+2. A **ServiceMeshMemberRoll** resource may be created in the project containing the control plane.  This resource
+  contains a single *members* list of all the projects that should belong in the mesh.  The resource must be named
+  *default*.  The user creating the resource must have *edit* or *admin* permissions for all projects in the
+  *members* list.
+
+### More Information
+
+* [Documentation](https://docs.openshift.com/container-platform/latest/service_mesh/v2x/servicemesh-release-notes.html)
+* [Bugs](https://issues.redhat.com/projects/OSSM)
+      Display Name:  Red Hat OpenShift Service Mesh
+      Install Modes:
+        Supported:  false
+        Type:       OwnNamespace
+        Supported:  false
+        Type:       SingleNamespace
+        Supported:  false
+        Type:       MultiNamespace
+        Supported:  true
+        Type:       AllNamespaces
+      Keywords:
+        istio
+        maistra
+        servicemesh
+      Links:
+        Name:  Red Hat OpenShift Service Mesh
+        URL:   https://docs.openshift.com/container-platform/latest/service_mesh/v2x/servicemesh-release-notes.html
+        Name:  Istio
+        URL:   https://istio.io/
+        Name:  Operator Source Code
+        URL:   https://github.com/Maistra/istio-operator
+        Name:  Bugs
+        URL:   https://issues.redhat.com/projects/OSSM
+      Maintainers:
+        Email:   istio-feedback@redhat.com
+        Name:    Red Hat, OpenShift Service Mesh
+      Maturity:  alpha
+      Provider:
+        Name:  Red Hat, Inc.
+      Related Images:
+        registry.redhat.io/openshift-service-mesh/proxy-init-rhel7@sha256:ee45a4a595ed491ce318d88dd90e0308c59131c67598afc7c67da601f3e5fb92
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:b6b75f32f1148f830abf1951eb71d8c55fe51cdbe1d6fb8176cdcd622d6eb4e3
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:161b3438a666469b230602b85d5c207f0f225210b5ba18c6ee7b9ae08127af23
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:98d83602207d3a6fcfb670b1368a3c3dafa233ad9b607ee95a708206cebae4c6
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:6b337ff07a029a414f786786291adfa5a3718f44ec56cf8f20144abb2eb3ddc3
+        registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:e65dde4675091224404e1fef46097a604bc013519c4a0c1cd717519e73a67249
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:c3ed6ee1d9a5efc6e620b423b77e3112d868980dfc373406fab54c2109f713df
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:da30fbe4ced00bb88cd525740c64500fdd18263617fdec477a590264e8d2b45f
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:e7acaa5d4a7f265cba1ad4f53859833390c5da1af31bb8546a5ae19f064a7dde
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:a4b5f4632e98938b8822827f1c0cc8dea6ee42d8357e68617d3750c5e51de55c
+        registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:b33be47b398992631dfac3cd7824dec732daefa8f18cf59bd4c96271853d5127
+        registry.redhat.io/openshift-service-mesh/mixer-rhel8@sha256:37b20c87bca153bcf435ffeb71b1b0e75ba190bae14d198c196993c5c48a64ec
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:a3f23302c832e418e55821328d859396f3fa79c5b8b08623251b33c0841ba892
+        registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:dd12fbe10644a92cb9506af14779f20e63a8544502da2029e31fede2ab03a42a
+        registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:8471869e66a98bd44c9730bb50d82827a6c17a68cdd6cb8fdaeeee6eccf92029
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:e614e9aa8e786a3ed31df6eacf6cf1ad556add4b272f61cdca7576da6cced838
+        registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:de34c50c3b67468056c3d8bd18c575da696efb7657989724714af294859df14d
+        registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:5c0eacb3024dab93e376c2edc60a02b066b62de5f40d81628d80ecd4f4a7dc4b
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:aa06b4a1971f90500296c9249dd496c6d84193a6b82f5b406c1c6eeb5b37e7f5
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:83dac7a5efd60d399f3ca0cc322727f88c2f9d93837e39c8800ed0d4ceeca01e
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:12284ec4fd6a02cfa82574469d022493688169ea09348ff1fd0b6170663b2956
+        registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:e1638e9b1c36b48220ac8bbe208ef0f2d59d184b89e0388a2b73d8c0da11946c
+        registry.redhat.io/openshift-service-mesh/3scale-istio-adapter-rhel8@sha256:2a15cb70a8a3290467f552821b50730fa7eaf6339f4f0fd9032cf2fe12d5c602
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:8c8008d46d0a68a2b71599391721132fe56fc36c922909afcbbb30fd5314314c
+        registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:12a2436fa98384cc7dd054c1ed586742f623a11c9bbc47e7fd67aab847dc8430
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:3fc0d5abea6d9b25040d74b8899aa7e5ac4e4ae1a3244e6fca467c0fef78a47f
+        registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:1be67785c051c48313a88e5e1ed5ee2de0d90169d5845457adad7c58dfc659fa
+      Version:      2.3.1-0
+    Name:           1.0
+  Default Channel:  stable
+  Package Name:     servicemeshoperator
+  Provider:
+    Name:  Red Hat, Inc.
+Events:    <none>

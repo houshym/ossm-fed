@@ -1,0 +1,17 @@
+kind: ExportedServiceSet
+apiVersion: federation.maistra.io/v1
+metadata:
+  name: rosa-prod-mesh
+  namespace: aro-stg-mesh
+spec:
+  exportRules:
+  - type: LabelSelector
+    labelSelector:
+      namespace: stg-bookinfo
+      selector:
+        matchLabels:
+          app: details
+      alias:
+        namespace: prod-bookinfo
+
+# This is a Kubernetes resource definition for a "ExportedServiceSet" resource in the "federation.maistra.io/v1" API version. It creates a resource named "rosa-prod-mesh" in the "stage-mesh" namespace. The "exportRules" field defines a rule that selects services in the "aro-stg-bookinfo" namespace with the label "app: details" and creates an alias for them in the "bookinfo" namespace. It's used for service mesh federation, which allows services to be easily shared across multiple service meshes.
