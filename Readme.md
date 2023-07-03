@@ -3,7 +3,9 @@
 ## Toward a True hybrid/multi-cloud by OSSM federation
 
 In this blog, we will discuss different aspects of multi-cloud and multi-cluster Kubernetes strategies. We will show how you can build Hybrid/multi-cloud architectures with Red Hat OpenShift and OpenShift Service Mesh(OSSM) federation
-(https://lh6.googleusercontent.com/kUuFtczX4_9Usd0gd3tIDtdKTnIgRtmOCcZ9RJcOuGO24HxTh1in4AF4FV21oXqzf7yGcteQ4Ed_0PP9DMCf92TrsSF1ESdkpr-qcVn_rx6SIIqNVcKHmT60u3V0rIbFRMPV963bnAMUMQNHvB3MMAY)
+
+![Federation](./images/federation.png)
+
 
 ## Multi/Hybrid Cloud Strategy
 
