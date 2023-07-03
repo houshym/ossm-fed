@@ -213,14 +213,16 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```
     
 
-2.  [Check operator status](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command
+1.  check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command
+
+  **check that operator status**
     ```bash
     oc describe sub elasticsearch-operator -n openshift-operators
     oc describe sub jaeger-product -n openshift-operators
     oc describe sub kiali-ossm -n openshift-operators
     oc describe sub servicemeshoperator -n openshift-operators
-    ```  
-or
+    ``` 
+  **or run the following script**
 
     ```bash
     #!/bin/bash
@@ -247,7 +249,7 @@ or
 
 **Note:** you can use this [script](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) to dploy a service mesh instance and create a federation between ROSA and ARO cluster.
   
-    ROSA cluster
+   **ROSA cluster**
 
     ```bash
     oc config use-context rosa
@@ -256,7 +258,7 @@ or
     oc apply -f rosa-prod/smcp.yaml
     oc apply -f rosa-prod/smmr.yaml
     ```
-    ARO cluster
+   **ARO cluster**
 
     ```bash
     oc config use-context aro
@@ -265,7 +267,7 @@ or
     oc apply -f aro-stg/smcp.yaml
     oc apply -f aro-stg/smmr.yaml
     ```
-    Check service mesh instance is up and running
+   **Check service mesh instance is up and running**
 
     ```bash
     oc config use-context rosa
@@ -279,13 +281,13 @@ or
   
 
 ### Deploy application on ROSA cluster
-
     ```bash
     oc config use-context rosa
     log "Installing bookinfo application in rosa-prod-mesh"
     oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/platform/kube/bookinfo.yaml
     oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/bookinfo-gateway.yaml
     oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/destination-rule-all.yaml
+    
     ```  
 
 ### Deploy application on ARO cluster
@@ -297,8 +299,7 @@ or
 
 ### Create Federation between ARO and ROSA
 
-1.  Retrieving ROSA Istio CA Root certificates
-    
+1.  Retrieving ROSA Istio CA Root certificates    
     ```bash
     oc config use-context rosa
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
@@ -351,7 +352,69 @@ or
     oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
     ```
 
-## federation in action
+  
+
+### Create federation between ROSA and ROG
+    
+1. Create a service mesh instance on ROG
+   ```bash
+    oc config use-context rog
+    oc new-project gcp-dev-mesh
+    oc new-project dev-bookinfo
+    oc apply -f gcp-dev/smcp.yaml
+    oc apply -f gcp-dev/smmr.yaml
+   ```
+1. Check mesh instance is up and running
+   ```bash
+    oc config use-context rosa
+    log "Waiting for rosa-prod-mesh installation to complete"
+    oc wait --for condition=Ready -n rosa-prod-mesh smmr/default --timeout 300s
+    oc config use-context rog
+    log "Waiting for gcp-dev-mesh installation to complete"
+    oc wait --for condition=Ready -n gcp-dev-mesh smmr/default --timeout 30
+   ```
+1. Install application on ROG cluster 
+    ```bash
+    oc apply -f gcp-dev/dev-detail-v3-deployment.yaml
+    oc apply -f gcp-dev/dev-detail-v3-service.yaml
+    ``` 
+1. Create Federtion between ROSA and ROG
+
+    **Retrieving ROSA Istio CA Root certificates**
+    ```bash
+    oc config use-context rosa
+    ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
+    #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
+    ```
+    **Retrieving ROSA Istio CA Root certificates**
+    ```bash
+    oc config use-context rog
+    GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
+    #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
+    ```
+    gsed "s:{{GCP_DEV_MESH_CERT}}:$GCP_DEV_MESH_CERT:g" rosa-prod/gcp-dev-mesh-ca-root-cert.yaml | oc apply -f -
+    oc apply -f rosa-prod/smp-gcp.yaml
+    oc apply -f rosa-prod/iss-gcp.yaml
+    oc config use-context rog
+    gsed "s:{{ROSA_PROD_MESH_CERT}}:$ROSA_PROD_MESH_CERT:g" gcp-dev/rosa-prod-mesh-ca-root-cert.yaml | oc apply -f -
+    oc apply -f gcp-dev/smp.yaml
+    oc apply -f gcp-dev/ess.yaml
+
+1. Check federation and import status on ROSA
+    ```bash
+    oc config use-context rosa
+    oc -n rosa-prod-mesh get servicemeshpeer gcp-dev-mesh -o json | jq .status
+    oc -n rosa-prod-mesh get importedservicesets gcp-dev-mesh -o json | jq .status
+    ```  
+
+1. Check federation and export status on ROG
+    ```bash
+    oc config use-context rog
+    oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh -o json | jq .status
+    oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
+    ```
+  
+ ## federation in action
 To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
 ```bash
 BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
@@ -359,178 +422,3 @@ while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; do
 ```
 
 open Kiali console and check the graph
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-  
-
-To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
-
-  
-
-BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
-
-while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
-
-  
-  
-
-1.  Create federation between ROSA and ROG
-    
-
-  
-
-Create a service mesh instance on ROG
-
-  
-
-oc config use-context rog
-
-  
-
-oc new-project gcp-dev-mesh
-
-oc new-project dev-bookinfo
-
-oc apply -f gcp-dev/smcp.yaml
-
-oc apply -f gcp-dev/smmr.yaml
-
-  
-
-Cherk mesh instance is up and running
-
-  
-
-oc config use-context rosa
-
-log "Waiting for rosa-prod-mesh installation to complete"
-
-oc wait --for condition=Ready -n rosa-prod-mesh smmr/default --timeout 300s
-
-oc config use-context rog
-
-log "Waiting for gcp-dev-mesh installation to complete"
-
-oc wait --for condition=Ready -n gcp-dev-mesh smmr/default --timeout 30
-
-  
-
-Install application on ROG cluster o
-
-c
-
-apply -f gcp-dev/dev-detail-v3-deployment.yaml
-
-oc apply -f gcp-dev/dev-detail-v3-service.yaml
-
-  
-  
-  
-
-Create Federtion between ROSA and ROG
-
-  
-
-Retrieving ROSA Istio CA Root certificates
-
-  
-
-oc config use-context rosa
-
-ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
-
-#PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
-
-  
-
-Retrieving ROSA Istio CA Root certificates
-
-  
-
-oc config use-context rog
-
-GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
-
-#STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
-
-  
-  
-  
-
-gsed "s:{{GCP_DEV_MESH_CERT}}:$GCP_DEV_MESH_CERT:g" rosa-prod/gcp-dev-mesh-ca-root-cert.yaml | oc apply -f -
-
-oc apply -f rosa-prod/smp-gcp.yaml
-
-oc apply -f rosa-prod/iss-gcp.yaml
-
-  
-
-oc config use-context rog
-
-gsed "s:{{ROSA_PROD_MESH_CERT}}:$ROSA_PROD_MESH_CERT:g" gcp-dev/rosa-prod-mesh-ca-root-cert.yaml | oc apply -f -
-
-oc apply -f gcp-dev/smp.yaml
-
-oc apply -f gcp-dev/ess.yaml
-
-  
-  
-
-Check federation and import status on ROSA
-
-  
-  
-
-oc config use-context rosa
-
-oc -n rosa-prod-mesh get servicemeshpeer gcp-dev-mesh -o json | jq .status
-
-oc -n rosa-prod-mesh get importedservicesets gcp-dev-mesh -o json | jq .status
-
-  
-  
-
-Check federation and export status on ROG
-
-  
-
-oc config use-context rog
-
-oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh -o json | jq .status
-
-oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
-
-  
-  
-  
-  
-  
-  
-  
-
-To see federation in action, create some load in the bookinfo app in rosa-prod-mesh. For example:
-
-oc config use-context rosa
-
-BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
-
-while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
-
-  
-  
-
-Open Kiali console and check the graph
