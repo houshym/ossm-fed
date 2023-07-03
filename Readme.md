@@ -234,8 +234,9 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     get_message "$operator" "$namespace"
     done
     ```
-3. create service mesh
+3. Create service mesh
     **Note:** you can use this [script](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) to dploy a service mesh instance and create a federation between ROSA and ARO cluster.
+
     **ROSA cluster**
     ```bash
     oc config use-context rosa
@@ -271,6 +272,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```  
 
 ### Deploy application on ARO cluster
+    
     ```bash
     oc config use-context aro
     oc apply -f aro-stg/stage-detail-v2-deployment.yaml
@@ -278,17 +280,20 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```
 ### Create Federation between ARO and ROSA
 1. Retrieving ROSA Istio CA Root certificates    
+    
     ```bash
     oc config use-context rosa
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
     ```
 1. Retrieving ARO Istio CA Root certificates
+    
     ```bash
     oc config use-context aro
     ARO_STG_MESH_CERT=$(oc get configmap -n aro-stg-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
     #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
     ```
 1. Enabling federation for rosa-prod-mesh
+    
     ```bash
     oc config use-context rosa
     log "Enabling federation for rosa-prod-mesh"
