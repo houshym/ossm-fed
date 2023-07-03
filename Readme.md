@@ -213,15 +213,14 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```
     
 
-1.  check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command
-
-  **check that operator status**
-    ```bash
+1. check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command:   
+   
+```bash
     oc describe sub elasticsearch-operator -n openshift-operators
     oc describe sub jaeger-product -n openshift-operators
     oc describe sub kiali-ossm -n openshift-operators
     oc describe sub servicemeshoperator -n openshift-operators
-    ``` 
+``` 
   **or run the following script**
 
     ```bash
@@ -262,7 +261,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
 
     ```bash
     oc config use-context aro
-​    ​oc new-project aro-stg-mesh
+    ​oc new-project aro-stg-mesh
     oc new-project stg-bookinfo
     oc apply -f aro-stg/smcp.yaml
     oc apply -f aro-stg/smmr.yaml
@@ -300,119 +299,128 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
 ### Create Federation between ARO and ROSA
 
 1.  Retrieving ROSA Istio CA Root certificates    
-    ```bash
-    oc config use-context rosa
-    ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
-    ```
+
+
+```bash
+oc config use-context rosa
+ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
+```
 1.  Retrieving ARO Istio CA Root certificates
-    ```bash
-    oc config use-context aro
-    ARO_STG_MESH_CERT=$(oc get configmap -n aro-stg-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
-    #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
-    ``` 
+   
+```bash
+oc config use-context aro
+ARO_STG_MESH_CERT=$(oc get configmap -n aro-stg-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
+#STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
+``` 
 
 1.  Enabling federation for rosa-prod-mesh
-    ```bash
-    oc config use-context rosa
-    log "Enabling federation for rosa-prod-mesh"
-    gsed "s:{{ARO_STG_MESH_CERT}}:$ARO_STG_MESH_CERT:g" rosa-prod/aro-stg-mesh-ca-root-cert.yaml | oc apply -f -
-    oc apply -f rosa-prod/smp-aro.yaml
-    oc apply -f rosa-prod/iss-aro.yaml
-    ```
+   
+```bash
+oc config use-context rosa
+log "Enabling federation for rosa-prod-mesh"
+gsed "s:{{ARO_STG_MESH_CERT}}:$ARO_STG_MESH_CERT:g" rosa-prod/aro-stg-mesh-ca-root-cert.yaml | oc apply -f -
+oc apply -f rosa-prod/smp-aro.yaml
+oc apply -f rosa-prod/iss-aro.yaml
+```
 
-1.  Enabling Federation for aro-stg-mesh
-    ```bash
-    oc config use-context aro
-    log "Enabling federation for aro-stg-mesh"
-    gsed "s:{{ROSA_PROD_MESH_CERT}}:$ROSA_PROD_MESH_CERT:g" aro-stg/rosa-prod-mesh-ca-root-cert.yaml | oc apply -f -
-    oc apply -f aro-stg/smp.yaml
-    oc apply -f aro-stg/ess.yaml
-    ```    
+4.  Enabling Federation for aro-stg-mesh
 
-1.  Config VirtualService for rosa-prod-mesh
-    ```bash
-    oc config use-context rosa
-    log "Installing VirtualService for rosa-prod-mesh"
-    oc apply -n prod-bookinfo -f rosa-prod/vs-mirror-details.yaml
-    ```    
+
+```bash
+oc config use-context aro
+log "Enabling federation for aro-stg-mesh"
+gsed "s:{{ROSA_PROD_MESH_CERT}}:$ROSA_PROD_MESH_CERT:g" aro-stg/rosa-prod-mesh-ca-root-cert.yaml | oc apply -f -
+oc apply -f aro-stg/smp.yaml
+oc apply -f aro-stg/ess.yaml
+```    
+
+5.  Config VirtualService for rosa-prod-mesh
+```bash
+oc config use-context rosa
+log "Installing VirtualService for rosa-prod-mesh"
+oc apply -n prod-bookinfo -f rosa-prod/vs-mirror-details.yaml
+```    
 1.  Check federation status
-    ```bash
-    oc -n rosa-prod-mesh get servicemeshpeer aro-stg-mesh -o json | jq .status
-    ```   
-    check connection status on aro-stg-mesh
-    ```bash
-    oc -n aro-stg-mesh get servicemeshpeer rosa-prod-mesh -o json | jq .status
-    ``` 
-    check service imported to into rosa-prod-mesh
-    ```bash
-    oc -n rosa-prod-mesh get importedservicesets aro-stg-mesh -o json | jq .status
-    ```
-    check if services from aro-stg-mesh are exported
-    ```bash
-    oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
-    ```
+```bash
+oc -n rosa-prod-mesh get servicemeshpeer aro-stg-mesh -o json | jq .status
+```   
+check connection status on aro-stg-mesh
 
-  
+```bash
+oc -n aro-stg-mesh get servicemeshpeer rosa-prod-mesh -o json | jq .status
+``` 
+check service imported to into rosa-prod-mesh
 
+```bash
+oc -n rosa-prod-mesh get importedservicesets aro-stg-mesh -o json | jq .status
+```
+check if services from aro-stg-mesh are exported
+
+```bash
+oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
+```
 ### Create federation between ROSA and ROG
     
 1. Create a service mesh instance on ROG
-   ```bash
-    oc config use-context rog
-    oc new-project gcp-dev-mesh
-    oc new-project dev-bookinfo
-    oc apply -f gcp-dev/smcp.yaml
-    oc apply -f gcp-dev/smmr.yaml
-   ```
+```bash
+ oc config use-context rog
+ oc new-project gcp-dev-mesh
+ oc new-project dev-bookinfo
+ oc apply -f gcp-dev/smcp.yaml
+ oc apply -f gcp-dev/smmr.yaml
+```
 1. Check mesh instance is up and running
-   ```bash
-    oc config use-context rosa
-    log "Waiting for rosa-prod-mesh installation to complete"
-    oc wait --for condition=Ready -n rosa-prod-mesh smmr/default --timeout 300s
-    oc config use-context rog
-    log "Waiting for gcp-dev-mesh installation to complete"
-    oc wait --for condition=Ready -n gcp-dev-mesh smmr/default --timeout 30
-   ```
+   
+```bash
+ oc config use-context rosa
+ log "Waiting for rosa-prod-mesh installation to complete"
+ oc wait --for condition=Ready -n rosa-prod-mesh smmr/default --timeout 300s
+ oc config use-context rog
+ log "Waiting for gcp-dev-mesh installation to complete"
+ oc wait --for condition=Ready -n gcp-dev-mesh smmr/default --timeout 30
+```
 1. Install application on ROG cluster 
-    ```bash
-    oc apply -f gcp-dev/dev-detail-v3-deployment.yaml
-    oc apply -f gcp-dev/dev-detail-v3-service.yaml
-    ``` 
+```bash
+oc apply -f gcp-dev/dev-detail-v3-deployment.yaml
+oc apply -f gcp-dev/dev-detail-v3-service.yaml
+``` 
 1. Create Federtion between ROSA and ROG
+     **Retrieving ROSA Istio CA Root certificates**
+    
+```bash
+ oc config use-context rosa
+ ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
+ #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
+```
+  **Retrieving ROSA Istio CA Root certificates**
 
-    **Retrieving ROSA Istio CA Root certificates**
-    ```bash
-    oc config use-context rosa
-    ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
-    #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
-    ```
-    **Retrieving ROSA Istio CA Root certificates**
-    ```bash
-    oc config use-context rog
-    GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
-    #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
-    ```
-    gsed "s:{{GCP_DEV_MESH_CERT}}:$GCP_DEV_MESH_CERT:g" rosa-prod/gcp-dev-mesh-ca-root-cert.yaml | oc apply -f -
-    oc apply -f rosa-prod/smp-gcp.yaml
-    oc apply -f rosa-prod/iss-gcp.yaml
-    oc config use-context rog
-    gsed "s:{{ROSA_PROD_MESH_CERT}}:$ROSA_PROD_MESH_CERT:g" gcp-dev/rosa-prod-mesh-ca-root-cert.yaml | oc apply -f -
-    oc apply -f gcp-dev/smp.yaml
-    oc apply -f gcp-dev/ess.yaml
+ ```bash
+ oc config use-context rog
+ GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | gsed ':a;N;$!ba;s/\n/\\\n /g')
+ #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
+ 
+ gsed "s:{{GCP_DEV_MESH_CERT}}:$GCP_DEV_MESH_CERT:g" rosa-prod/gcp-dev-mesh-ca-root-cert.yaml | oc apply -f -
+ oc apply -f rosa-prod/smp-gcp.yaml
+ oc apply -f rosa-prod/iss-gcp.yaml
+ oc config use-context rog
+ gsed "s:{{ROSA_PROD_MESH_CERT}}:$ROSA_PROD_MESH_CERT:g" gcp-dev/rosa-prod-mesh-ca-root-cert.yaml | oc apply -f -
+ oc apply -f gcp-dev/smp.yaml
+ oc apply -f gcp-dev/ess.yaml
+```
 
 1. Check federation and import status on ROSA
-    ```bash
-    oc config use-context rosa
-    oc -n rosa-prod-mesh get servicemeshpeer gcp-dev-mesh -o json | jq .status
-    oc -n rosa-prod-mesh get importedservicesets gcp-dev-mesh -o json | jq .status
-    ```  
+```bash
+oc config use-context rosa
+oc -n rosa-prod-mesh get servicemeshpeer gcp-dev-mesh -o json | jq .status
+oc -n rosa-prod-mesh get importedservicesets gcp-dev-mesh -o json | jq .status
+```  
 
 1. Check federation and export status on ROG
-    ```bash
-    oc config use-context rog
-    oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh -o json | jq .status
-    oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
-    ```
+```bash
+oc config use-context rog
+oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh -o json | jq .status
+oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
+```
   
  ## federation in action
 To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
