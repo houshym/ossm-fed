@@ -146,9 +146,9 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
 1.  Clone the repository
     
 
-    ```bash
-    Git clone https://github.com/houshym/ossm-fed.git
-    ```
+```bash
+Git clone https://github.com/houshym/ossm-fed.git
+```
 
 1.  Install service mesh operators on each cluster by applying this [manifest](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) on each cluster or use the following snippet
 
@@ -250,22 +250,22 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
   
    **ROSA cluster**
 
-    ```bash
-    oc config use-context rosa
-    oc new-project rosa-prod-mesh
-    oc new-project prod-bookinfo
-    oc apply -f rosa-prod/smcp.yaml
-    oc apply -f rosa-prod/smmr.yaml
-    ```
+```bash
+oc config use-context rosa
+oc new-project rosa-prod-mesh
+oc new-project prod-bookinfo
+oc apply -f rosa-prod/smcp.yaml
+oc apply -f rosa-prod/smmr.yaml
+```
    **ARO cluster**
 
-    ```bash
-    oc config use-context aro
-    ​oc new-project aro-stg-mesh
-    oc new-project stg-bookinfo
-    oc apply -f aro-stg/smcp.yaml
-    oc apply -f aro-stg/smmr.yaml
-    ```
+```bash
+oc config use-context aro
+​oc new-project aro-stg-mesh
+oc new-project stg-bookinfo
+oc apply -f aro-stg/smcp.yaml
+oc apply -f aro-stg/smmr.yaml
+```
    **Check service mesh instance is up and running**
 
     ```bash
