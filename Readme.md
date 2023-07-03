@@ -268,33 +268,33 @@ oc apply -f aro-stg/smmr.yaml
 ```
    **Check service mesh instance is up and running**
 
-    ```bash
-    oc config use-context rosa
-    log "Waiting for rosa-prod-mesh installation to complete"
-    oc wait --for condition=Ready -n rosa-prod-mesh smmr/default --timeout 300s
-    oc config use-context aro
-    log "Waiting for aro-stg-mesh installation to complete"
-    oc wait --for condition=Ready -n aro-stg-mesh smmr/default --timeout 300s
-    ```
+```bash
+oc config use-context rosa
+log "Waiting for rosa-prod-mesh installation to complete"
+oc wait --for condition=Ready -n rosa-prod-mesh smmr/default --timeout 300s
+oc config use-context aro
+log "Waiting for aro-stg-mesh installation to complete"
+oc wait --for condition=Ready -n aro-stg-mesh smmr/default --timeout 300s
+```
 
   
 
 ### Deploy application on ROSA cluster
-    ```bash
-    oc config use-context rosa
-    log "Installing bookinfo application in rosa-prod-mesh"
-    oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/platform/kube/bookinfo.yaml
-    oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/bookinfo-gateway.yaml
-    oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/destination-rule-all.yaml
-    
-    ```  
+```bash
+oc config use-context rosa
+log "Installing bookinfo application in rosa-prod-mesh"
+oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/platform/kube/bookinfo.yaml
+oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/bookinfo-gateway.yaml
+oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/destination-rule-all.yaml
+
+```  
 
 ### Deploy application on ARO cluster
-    ```bash
-    oc config use-context aro
-    oc apply -f aro-stg/stage-detail-v2-deployment.yaml
-    oc apply -f aro-stg/stage-detail-v2-service.yaml
-    ```
+```bash
+oc config use-context aro
+oc apply -f aro-stg/stage-detail-v2-deployment.yaml
+oc apply -f aro-stg/stage-detail-v2-service.yaml
+```
 
 ### Create Federation between ARO and ROSA
 
