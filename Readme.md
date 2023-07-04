@@ -235,7 +235,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     done
     ```
 3. Create service mesh
-
+    
     **Note:** you can use this [script](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) to dploy a service mesh instance and create a federation between ROSA and ARO cluster.
 
     **ROSA cluster**
@@ -263,7 +263,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     log "Waiting for aro-stg-mesh installation to complete"
     oc wait --for condition=Ready -n aro-stg-mesh smmr/default --timeout 300s
     ```
-### Deploy application on clusters
+### Deploy application ROSA cluster
     
     ```bash
     oc config use-context rosa
@@ -272,6 +272,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/destination-rule-all.yaml
     ```
 
+
 ### Deploy application on ARO cluster
     
     ```bash
@@ -279,8 +280,10 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     oc apply -f aro-stg/stage-detail-v2-deployment.yaml
     oc apply -f aro-stg/stage-detail-v2-service.yaml
     ```
+    
 
 ### Create Federation between ARO and ROSA
+
 1. Retrieving ROSA Istio CA Root certificates    
     
     ```bash
@@ -312,28 +315,32 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     oc apply -f aro-stg/ess.yaml
     ```    
 1. Config VirtualService for rosa-prod-mesh
+    
     ```bash
     oc config use-context rosa
     log "Installing VirtualService for rosa-prod-mesh"
     oc apply -n prod-bookinfo -f rosa-prod/vs-mirror-details.yaml
     ```    
-1. Check federation status
+2. Check federation status
+   
     ```bash
     oc -n rosa-prod-mesh get servicemeshpeer aro-stg-mesh -o json | jq .status
     ```   
-1. Check connection status on aro-stg-mesh
+3. Check connection status on aro-stg-mesh
+   
     ```bash
     oc -n aro-stg-mesh get servicemeshpeer rosa-prod-mesh -o json | jq .status
     ``` 
-1. check service imported to into rosa-prod-mesh
+4. check service imported to into rosa-prod-mesh
+   
     ```bash
     oc -n rosa-prod-mesh get importedservicesets aro-stg-mesh -o json | jq .status
     ```
-check if services from aro-stg-mesh are exported
-
-```bash
-oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
-```
+5. check if services from aro-stg-mesh are exported
+   
+    ```bash
+    oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
+    ```
 ### Create federation between ROSA and ROG
     
 1. Create a service mesh instance on ROG
