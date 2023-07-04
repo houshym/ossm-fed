@@ -263,7 +263,8 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     log "Waiting for aro-stg-mesh installation to complete"
     oc wait --for condition=Ready -n aro-stg-mesh smmr/default --timeout 300s
     ```
-### Deploy application on ROSA cluster
+### Deploy application on clusters
+    
     ```bash
     oc config use-context rosa
     oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/platform/kube/bookinfo.yaml
