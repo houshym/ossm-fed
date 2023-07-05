@@ -4,8 +4,6 @@
 
 In this blog, we will discuss different aspects of multi-cloud and multi-cluster Kubernetes strategies. We will show how you can build Hybrid/multi-cloud architectures with Red Hat OpenShift and OpenShift Service Mesh(OSSM) federation
 
-![Federation](./images/federation.png)
-
 
 ## Multi/Hybrid Cloud Strategy
 
@@ -85,10 +83,9 @@ In general, we can categorize connection strategy into two high-level categories
 
 1.  **CNI-oriented model:** The CNI-oriented (Container Network Interface) model acts at the network layer, connecting overlay networks together. This model leverages the CNI plug-in architecture of Kubernetes to provide network connectivity between nodes in different clusters.
     
+    This typically involves deploying a CNI plugin, such as OVN, Flannel, Calico, or Cilium, in each cluster and configuring the plugin to establish connectivity between the clusters.
 
-This typically involves deploying a CNI plugin, such as OVN, Flannel, Calico, or Cilium, in each cluster and configuring the plugin to establish connectivity between the clusters.
-
-The CNI plug-in provides a low-level, flexible approach to connecting the overlay networks and can support a variety of network topologies, including mesh and hub-and-spoke.
+    The CNI plug-in provides a low-level, flexible approach to connecting the overlay networks and can support a variety of network topologies, including mesh and hub-and-spoke.
 
 1.  **CNI-agnostic model:** The CNI-agnostic model acts at the controller layer, connecting Kubernetes clusters through a central control plane. This model does not rely on the CNI plug-in architecture and instead uses a higher-level API to provide network connectivity between nodes in different clusters. The central control plane provides a unified view of the network and can be used to manage network policies, monitor network performance, and provide security services such as encryption and firewalling.
 
@@ -234,7 +231,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     get_message "$operator" "$namespace"
     done
     ```
-3. Create service mesh
+3. Create service mesh on clusters
     
     **Note:** you can use this [script](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) to dploy a service mesh instance and create a federation between ROSA and ARO cluster.
 
@@ -263,7 +260,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     log "Waiting for aro-stg-mesh installation to complete"
     oc wait --for condition=Ready -n aro-stg-mesh smmr/default --timeout 300s
     ```
-### Deploy application ROSA cluster
+### Deploy application on ROSA cluster
     
  ```bash
  oc config use-context rosa
@@ -412,3 +409,6 @@ while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; do
 ```
 
 open Kiali console and check the graph
+
+
+![Federation](./images/federation.png)
