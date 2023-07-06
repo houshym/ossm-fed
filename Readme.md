@@ -153,7 +153,7 @@ In this blog, we use public clusters, but in a production environment, it is hig
   - ARO (Azure Red Hat OpenShift) cluster
   - ROG (Red Hat OpenShift Dedicated on GCP) cluster
   
-**Note:** We use three contexts with the following name in the scripts:
+**Note:** The scripts utilize three kubeconfig contexts, each with a specific purpose:
   - rosa : to access to ROSA cluster   
   - aro: to access to ARO cluster
   - rog: to access to GCP cluster
@@ -165,8 +165,11 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```bash
     Git clone https://github.com/houshym/ossm-fed.git
     ```
+    **Note:** you can use all-in-one scritps to dploy a service mesh instance and create a federation between clusters
+     [create federated mesh between ROSA and ARO and deply app](./rosa-aro-fed.sh)
+     [create federated mesh between ROSA and ROG and deply app](./rosa-rog-fed.sh) 
 
-1. Install service mesh operators on each cluster by applying this [manifest](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) on each cluster or use the following snippet
+2. Install service mesh operators on each cluster by applying this [manifest](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) on each cluster or use the following snippet
 
     ```bash
         cat << EOF | oc apply -f -
@@ -227,7 +230,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
         ---
         EOF
     ```
-2. Check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command:   
+3. Check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command:   
     ```bash
     oc describe sub elasticsearch-operator -n openshift-operators
     oc describe sub jaeger-product -n openshift-operators
@@ -253,10 +256,8 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     get_message "$operator" "$namespace"
     done
     ```
-3. Create service mesh on clusters
+4. Create service mesh on clusters
     
-    **Note:** you can use this [script](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) to dploy a service mesh instance and create a federation between ROSA and ARO cluster.
-
     **ROSA cluster**
     ```bash
     oc config use-context rosa
