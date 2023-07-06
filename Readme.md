@@ -167,6 +167,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```
     **Note:** you can use all-in-one scritps to dploy a service mesh instance and create a federation between clusters
      [create federated mesh between ROSA and ARO and deply app](./rosa-aro-fed.sh)
+     
      [create federated mesh between ROSA and ROG and deply app](./rosa-rog-fed.sh) 
 
 2. Install service mesh operators on each cluster by applying this [manifest](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) on each cluster or use the following snippet
