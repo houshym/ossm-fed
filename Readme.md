@@ -121,7 +121,29 @@ However, it is important to keep in mind that a service mesh solution may not be
 
 ### OpenShift Service Mesh Federation in action
 
-For this post, we’ll use three different cloud providers, but you can run it on two clusters in the same cloud or a different one.
+For this post, we’ll use three different cloud providers, but you can run it on two clusters in the same cloud or a different one. There are different ffederation deployment model as shown in the picture.
+![Mesh Depoyment model](./images/federation-deployment-model.png)
+
+in this blogs we use mesh federated across clusters.
+
+### OSSM federation Architecture
+Federation is a deployment model that lets you share services and workloads between separate meshes managed in distinct administrative domains.
+![OSSM Federation Architecture](./images/federation-architecture.png)
+
+Federation allows a mesh to provide access to its services to other meshes (export services), and to use services made available by other meshes (import services).
+Interaction between meshes if facilitated through ingress and egress gateways, which are the only identities transferred between meshes
+All outbound service requests are terminated at a local egress gateway
+All inbound service requests are terminated at a local ingress gateway
+
+
+
+The following resources are used to configure the federation between two or more meshes.
+
+A ServiceMeshPeer resource declares the federation between a pair of service meshes.
+
+An ExportedServiceSet resource declares that one or more services from the mesh are available for use by a peer mesh.
+
+An ImportedServiceSet resource declares which services exported by a peer mesh will be imported into the mesh.
 
 #### Prerequisites
 
@@ -260,6 +282,11 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     log "Waiting for aro-stg-mesh installation to complete"
     oc wait --for condition=Ready -n aro-stg-mesh smmr/default --timeout 300s
     ```
+
+## Deploy Application
+We use famous bookinfo applications and we deploy all microservice on ROSA but we deploy different version of details microservice on ARO and ROG to show the federation. This deployment can be use for migration, DR, bursting, ...
+
+![bookinfo app](./images/bookinfo.png)
 ### Deploy application on ROSA cluster
     
  ```bash
@@ -411,4 +438,4 @@ while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; do
 open Kiali console and check the graph
 
 
-![Federation](./images/federation.png)
+![Federation](./images/kiali.png)
