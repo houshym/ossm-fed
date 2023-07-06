@@ -165,7 +165,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```bash
     Git clone https://github.com/houshym/ossm-fed.git
     ```
-    **Note:** you can use all-in-one scritps to dploy a service mesh instance and create a federation between clusters
+    **Note:** you can use all-in-one scritps to deploy a service mesh instance and create a federation between clusters
 
      - [create federated mesh between ROSA and ARO and deply app](./rosa-aro-fed.sh)
 
@@ -428,7 +428,7 @@ oc -n rosa-prod-mesh get importedservicesets gcp-dev-mesh -o json -o jsonpath='{
 ```bash
 oc config use-context rog
 oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh -o json -o jsonpath='{.status}'
-oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json -o jsonpath='{.status}'
+oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
 ```
   
  ## federation in action
