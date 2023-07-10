@@ -147,16 +147,16 @@ An ImportedServiceSet resource declares which services exported by a peer mesh w
 
 #### Prerequisites
 
-In this blog, we use public clusters, but in a production environment, it is highly recommended to use private clusters.
+In this blog, we use 3 public clusters, but in a production environment, it is highly recommended to use private clusters.
 
   - ROSA (Red Hat Openshift Service on AWS) cluster
   - ARO (Azure Red Hat OpenShift) cluster
   - ROG (Red Hat OpenShift Dedicated on GCP) cluster
   
 **Note:** The scripts utilize three kubeconfig contexts, each with a specific purpose:
-  - rosa : to access to ROSA cluster   
-  - aro: to access to ARO cluster
-  - rog: to access to GCP cluster
+  - rosa: to access to ROSA cluster   
+  - aro:  to access to ARO cluster
+  - rog:  to access to GCP cluster
 
 #### Deploy OpenShift Service Mesh on all clusters
 
@@ -165,11 +165,8 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```bash
     Git clone https://github.com/houshym/ossm-fed.git
     ```
-    **Note:** you can use all-in-one scritps to deploy a service mesh instance and create a federation between clusters
-
-     - [create federated mesh between ROSA and ARO and deply app](./rosa-aro-fed.sh)
-
-     - [create federated mesh between ROSA and ROG and deply app](./rosa-rog-fed.sh) 
+    
+    **Note:** if service mesh already installed go to step 4
 
 2. Install service mesh operators on each cluster by applying this [manifest](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) on each cluster or use the following snippet
 
@@ -259,6 +256,11 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     done
     ```
 4. Create service mesh on clusters
+     **Note:** you can use all-in-one scritps to deploy a service mesh instance and create a federation between clusters
+
+     - [create federated mesh between ROSA and ARO and deploy app](./rosa-aro-fed.sh)
+
+     - [create federated mesh between ROSA and ROG and deploy app](./rosa-rog-fed.sh) 
     
     **ROSA cluster**
     ```bash
