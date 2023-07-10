@@ -229,32 +229,14 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
         ---
         EOF
     ```
-3. Check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command:   
+3. Check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command or run this [script](./ossm-operator/check-ossm.sh):   
     ```bash
-    oc describe sub elasticsearch-operator -n openshift-operators
-    oc describe sub jaeger-product -n openshift-operators
-    oc describe sub kiali-ossm -n openshift-operators
-    oc describe sub servicemeshoperator -n openshift-operators
-    ``` 
-    **or run the following script**
-    ```bash
-    #!/bin/bash
-    get_message() {
-    operator=$1
-    namespace=$2
-    message=$(oc describe sub "$operator" -n "$namespace" | yq '.Status.Conditions.Message')
-    echo "Operator: $operator"
-    echo "Message: $message"
-    echo
-    }
-    operators=("elasticsearch-operator" "jaeger-product" "kiali-ossm" "servicemeshoperator")
-    namespaces=("openshift-operators-redhat" "openshift-distributed-tracing" "openshift-operators" "openshift-operators")
-    for ((i=0; i<${#operators[@]}; i++)); do
-    operator="${operators[$i]}"
-    namespace="${namespaces[$i]}"
-    get_message "$operator" "$namespace"
-    done
+    oc get sub elasticsearch-operator -n openshift-operators-redhat --output jsonpath='{.status.conditions[*].message}'
+    oc get sub jaeger-product  -n openshift-distributed-tracing --output jsonpath='{.status.conditions[*].message}'
+    oc get sub kiali-ossm  -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
+    oc get sub servicemeshoperator -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
     ```
+
 4. Create service mesh on clusters
      **Note:** you can use all-in-one scritps to deploy a service mesh instance and create a federation between clusters
 
