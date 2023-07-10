@@ -168,7 +168,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     
     **Note:** if service mesh already installed go to step 4
 
-2. Install service mesh operators on each cluster by applying this [manifest](https://github.com/houshym/ossm-fed/blob/main/ossm-operator/ossm.yaml) on each cluster or use the following snippet
+2. Install service mesh operators on each cluster by applying the following snippet on each cluster or use the this [script](./ossm-operator/deploy-ossm.sh)
 
     ```bash
         cat << EOF | oc apply -f -
