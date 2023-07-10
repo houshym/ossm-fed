@@ -17,7 +17,7 @@ log "Installing control plane for rosa-prod-mesh"
 oc apply -f rosa-prod/smcp.yaml
 oc apply -f rosa-prod/smmr.yaml
 
-# change to submariner 2 context
+# change to aro context
 oc config use-context aro
 
 log "Creating projects for aro-stg-mesh"
