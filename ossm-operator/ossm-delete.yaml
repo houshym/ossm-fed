@@ -57,8 +57,3 @@ spec:
   installPlanApproval: Automatic
 ---
 
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: openshift-distributed-tracing
----
