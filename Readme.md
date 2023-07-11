@@ -410,7 +410,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
  oc wait --for condition=Ready -n rosa-prod-mesh smmr/default --timeout 300s
  oc config use-context rog
  echo "Waiting for gcp-dev-mesh installation to complete"
- oc wait --for condition=Ready -n gcp-dev-mesh smmr/default --timeout 30
+ oc wait --for condition=Ready -n gcp-dev-mesh smmr/default --timeout 300s
 ```
 1. Install application on ROG cluster 
 ```bash
