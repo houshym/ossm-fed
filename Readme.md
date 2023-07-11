@@ -174,76 +174,76 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     **Note:** if service mesh already installed go to step 4
 
 2. Install service mesh operators on each cluster by applying the following snippet on each cluster or use the this [script](./ossm-operator/deploy-ossm.sh)
-
     ```bash
-        cat << EOF | oc apply -f -
-        apiVersion: v1
+    cat << EOF | oc apply -f -
+    apiVersion: v1
         kind: Namespace
-        metadata:
-          name: openshift-operators-redhat
-        ---
-        apiVersion: v1
-        kind: Namespace
-        metadata:
-          name: openshift-distributed-tracing
-        ---
-        # installing elastic search operator
-        #Create a Subscription to subscribe the openshift-operators namespace 
-        # to the OpenShift Elasticsearch Operator
-        apiVersion: operators.coreos.com/v1alpha1
-        kind: Subscription
-        metadata:
-          name: elasticsearch-operator
-          namespace: openshift-operators
-        spec:
-          channel: "stable"
-          name: elasticsearch-operator
-          source: redhat-operators
-          sourceNamespace: openshift-marketplace
-          installPlanApproval: Automatic
-        ---
-        #install jaeger operator
-        apiVersion: operators.coreos.com/v1alpha1
-        kind: Subscription
-        metadata:
-          name: jaeger-product
-          namespace: openshift-operators
-        spec:
-          name: jaeger-product
-          source: redhat-operators
-          sourceNamespace: openshift-marketplace
-          channel: "stable"
-          installPlanApproval: Automatic
-        --- 
-        #intsall Kiali operator
-        apiVersion: operators.coreos.com/v1alpha1
-        kind: Subscription
-        metadata:
-          name: kiali-ossm
-          namespace: openshift-operators
-        spec:
-          name: kiali-ossm
-          source: redhat-operators
-          sourceNamespace: openshift-marketplace
-          channel: "stable"
-          installPlanApproval: Automatic
-        --- 
-        # Create a Subscription  to subscribe the openshift-operators
-        # namespace to the Red Hat OpenShift Service Mesh Operator
-        apiVersion: operators.coreos.com/v1alpha1
-        kind: Subscription
-        metadata:
-          name: servicemeshoperator
-          namespace: openshift-operators
-        spec:
-          channel: "stable"
-          name: servicemeshoperator
-          source: redhat-operators
-          sourceNamespace: openshift-marketplace
-          installPlanApproval: Automatic
-        ---
-        EOF
+    metadata:
+      name: openshift-operators-redhat
+    ---
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: openshift-distributed-tracing
+    ---
+    # installing elastic search operator
+    #Create a Subscription to subscribe the openshift-operators namespace 
+    # to the OpenShift Elasticsearch Operator
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: Subscription
+    metadata:
+      name: elasticsearch-operator
+      namespace: openshift-operators
+    spec:
+      channel: "stable"
+      name: elasticsearch-operator
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+      installPlanApproval: Automatic
+    ---
+    #install jaeger operator
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: Subscription
+    metadata:
+      name: jaeger-product
+      namespace: openshift-operators
+    spec:
+      name: jaeger-product
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+      channel: "stable"
+      installPlanApproval: Automatic
+    --- 
+    #intsall Kiali operator
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: Subscription
+    metadata:
+      name: kiali-ossm
+      namespace: openshift-operators
+    spec:
+      name: kiali-ossm
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+      channel: "stable"
+      installPlanApproval: Automatic
+    --- 
+    # Create a Subscription  to subscribe the openshift-operators
+    # namespace to the Red Hat OpenShift Service Mesh Operator
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: Subscription
+    metadata:
+      name: servicemeshoperator
+      namespace: openshift-operators
+    spec:
+      channel: "stable"
+      name: servicemeshoperator
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+      installPlanApproval: Automatic
+    EOF
+
     ```
+
 3. Check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command or run this [script](./ossm-operator/check-ossm.sh):   
     ```bash
     oc get sub elasticsearch-operator -n openshift-operators-redhat --output jsonpath='{.status.conditions[*].message}'
