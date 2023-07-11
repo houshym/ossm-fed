@@ -277,7 +277,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     **ARO cluster**
     ```bash
     oc config use-context aro
-    ​oc new-project aro-stg-mesh
+    oc new-project aro-stg-mesh
     oc new-project stg-bookinfo
     oc apply -f aro-stg/smcp.yaml
     oc apply -f aro-stg/smmr.yaml
