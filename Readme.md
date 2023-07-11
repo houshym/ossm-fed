@@ -399,27 +399,30 @@ oc apply -f gcp-dev/dev-detail-v3-deployment.yaml
 oc apply -f gcp-dev/dev-detail-v3-service.yaml
 ``` 
 1. Create Federtion between ROSA and ROG
+
      **Retrieving ROSA Istio CA Root certificates**
     
 ```bash
  oc config use-context rosa
- ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | sed ':a;N;$!ba;s/\n/\\\n /g')
+ ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
  #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
 ```
   **Retrieving ROSA Istio CA Root certificates**
 
  ```bash
  oc config use-context rog
- GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' | sed ':a;N;$!ba;s/\n/\\\n /g')
+ GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
  #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
  
- sed "s:{{GCP_DEV_MESH_CERT}}:$GCP_DEV_MESH_CERT:g" rosa-prod/gcp-dev-mesh-ca-root-cert.yaml | oc apply -f -
- oc apply -f rosa-prod/smp-gcp.yaml
- oc apply -f rosa-prod/iss-gcp.yaml
- oc config use-context rog
- sed "s:{{ROSA_PROD_MESH_CERT}}:$ROSA_PROD_MESH_CERT:g" gcp-dev/rosa-prod-mesh-ca-root-cert.yaml | oc apply -f -
+ oc create configmap rosa-prod-mesh-ca-root-cert -n gcp-dev-mesh --from-literal=root-cert.pem="$ROSA_PROD_MESH_CERT"
  oc apply -f gcp-dev/smp.yaml
  oc apply -f gcp-dev/ess.yaml
+ 
+ oc config use-context rosa
+ oc oc create configmap gcp-dev-mesh-ca-root-cert -n rosa-prod-mesh --from-literal=root-cert.pem="$GCP_DEV_MESH_CERT"
+ oc apply -f rosa-prod/smp-gcp.yaml
+ oc apply -f rosa-prod/iss-gcp.yaml
+
 ```
 
 1. Check federation and import status on ROSA
