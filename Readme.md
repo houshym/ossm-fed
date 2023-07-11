@@ -94,7 +94,6 @@ In general, we can categorize connection strategy into two high-level categories
     The CNI plug-in provides a low-level, flexible approach to connecting the overlay networks and can support a variety of network topologies, including mesh and hub-and-spoke.
 
 1.  **CNI-agnostic model:** The CNI-agnostic model acts at the controller layer, connecting Kubernetes clusters through a central control plane. This model does not rely on the CNI plug-in architecture and instead uses a higher-level API to provide network connectivity between nodes in different clusters. The central control plane provides a unified view of the network and can be used to manage network policies, monitor network performance, and provide security services such as encryption and firewalling.
-
 ![CNI](./images/cni.png)
 
 ## Choose a solution
