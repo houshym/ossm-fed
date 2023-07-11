@@ -177,7 +177,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```bash
     cat << EOF | oc apply -f -
     apiVersion: v1
-        kind: Namespace
+    kind: Namespace
     metadata:
       name: openshift-operators-redhat
     ---
