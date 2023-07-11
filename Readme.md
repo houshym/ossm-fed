@@ -193,7 +193,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     kind: Subscription
     metadata:
       name: elasticsearch-operator
-      namespace: openshift-operators
+      namespace: openshift-operators-redhat
     spec:
       channel: "stable"
       name: elasticsearch-operator
@@ -206,7 +206,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     kind: Subscription
     metadata:
       name: jaeger-product
-      namespace: openshift-operators
+      namespace: openshift-distributed-tracing
     spec:
       name: jaeger-product
       source: redhat-operators
