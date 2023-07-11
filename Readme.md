@@ -339,11 +339,12 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     find ARO ingress load balancer IP address/FQDN  
     ```bash
     oc config use-context aro
-    oc get svc rosa-prod-ingress -n aro-stg-msh 
+    oc get svc rosa-prod-ingress -n aro-stg-mesh 
     
     ```
     use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp-aro.yaml ( spec.remote.addresses) and then apply the manifest
-    ```bash  
+    ```bash
+    oc config use-context rosa
     oc apply -f rosa-prod/smp-aro.yaml
     oc apply -f rosa-prod/iss-aro.yaml
     ```
@@ -356,7 +357,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     find ROSA ingress load balancer IP address/FQDN  
     ```bash
     oc config use-context aro
-    oc get svc rosa-prod-ingress -n aro-stg-msh 
+    oc get svc rosa-prod-ingress -n aro-stg-mesh 
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
     oc apply -f aro-stg/smp.yaml
@@ -441,7 +442,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
 
     ```bash
     oc config use-context rosa
-    oc get svc gcp-dev-ingress -n rosa-prod-msh 
+    oc get svc gcp-dev-ingress -n rosa-prod-mesh 
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
