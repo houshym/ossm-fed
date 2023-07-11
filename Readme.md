@@ -258,7 +258,8 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     oc get sub servicemeshoperator -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
     ```
 
-4. Create service mesh on clusters
+4. Create a service mesh instance in each cluster
+   
      **Note:** you can use all-in-one scritps to deploy a service mesh instance and create a federation between clusters
 
      - [create federated mesh between ROSA and ARO and deploy app](./rosa-aro-fed.sh)
