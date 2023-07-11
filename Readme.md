@@ -335,6 +335,15 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     oc config use-context rosa
     echo "Enabling federation for rosa-prod-mesh"
     oc create configmap aro-stg-mesh-ca-root-cert --from-literal=root-cert.pem="$ARO_STG_MESH_CERT" -n rosa-prod-mesh
+    ```
+    find ARO ingress load balancer IP address/FQDN  
+    ```bash
+    oc config use-context aro
+    oc get svc rosa-prod-ingress -n aro-stg-msh 
+    
+    ```
+    use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp-aro.yaml ( spec.remote.addresses) and then apply the manifest
+    ```bash  
     oc apply -f rosa-prod/smp-aro.yaml
     oc apply -f rosa-prod/iss-aro.yaml
     ```
@@ -343,6 +352,13 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     oc config use-context aro
     echo "Enabling federation for aro-stg-mesh"
     oc create configmap rosa-prod-mesh-ca-root-cert  --from-literal=root-cert.pem="$ROSA_PROD_MESH_CERT" -n aro-stg-mesh
+    ```
+    find ROSA ingress load balancer IP address/FQDN  
+    ```bash
+    oc config use-context aro
+    oc get svc rosa-prod-ingress -n aro-stg-msh 
+    ```
+    and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
     oc apply -f aro-stg/smp.yaml
     oc apply -f aro-stg/ess.yaml
     ```    
@@ -398,32 +414,60 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
 oc apply -f gcp-dev/dev-detail-v3-deployment.yaml
 oc apply -f gcp-dev/dev-detail-v3-service.yaml
 ``` 
-1. Create Federtion between ROSA and ROG
+### Create Federtion between ROSA and ROG
 
-     **Retrieving ROSA Istio CA Root certificates**
+1. Retrieving ROSA Istio CA Root certificates**
     
-```bash
- oc config use-context rosa
- ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
- #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
-```
-  **Retrieving ROSA Istio CA Root certificates**
+    ```bash
+    oc config use-context rosa
+    ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
+     #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
+    ```
+1. Retrieving ROSA Istio CA Root certificates
+    
+    ```bash
+    oc config use-context rog
+    GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
+    #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
 
- ```bash
- oc config use-context rog
- GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
- #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
- 
- oc create configmap rosa-prod-mesh-ca-root-cert -n gcp-dev-mesh --from-literal=root-cert.pem="$ROSA_PROD_MESH_CERT"
- oc apply -f gcp-dev/smp.yaml
- oc apply -f gcp-dev/ess.yaml
- 
- oc config use-context rosa
- oc oc create configmap gcp-dev-mesh-ca-root-cert -n rosa-prod-mesh --from-literal=root-cert.pem="$GCP_DEV_MESH_CERT"
- oc apply -f rosa-prod/smp-gcp.yaml
- oc apply -f rosa-prod/iss-gcp.yaml
+1. Enabling federation for gcp-dev-mesh
 
-```
+    ```bash  
+    echo "Enabling federation for rosa-prod-mesh" 
+    oc create configmap rosa-prod-mesh-ca-root-cert -n gcp-dev-mesh --from-literal=root-cert.pem="$ROSA_PROD_MESH_CERT"
+    ```
+
+    find ROSA ingress load balancer IP address/FQDN
+
+    ```bash
+    oc config use-context rosa
+    oc get svc gcp-dev-ingress -n rosa-prod-msh 
+    ```
+    and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
+    ```bash
+    oc config use-context rog
+    oc apply -f gcp-dev/smp.yaml
+    oc apply -f gcp-dev/ess.yaml
+    ```
+1. Enabling federation for rosa-prod-mesh    
+    ```bash
+    oc config use-context rosa
+    oc oc create configmap gcp-dev-mesh-ca-root-cert -n rosa-prod-mesh --from-literal=root-cert.pem="$GCP_DEV_MESH_CERT"
+    ```
+
+    find rog ingress load balancer IP address/FQDN
+
+    ```bash
+    oc config use-context rog
+    oc get svc rosa-prod-ingress -n gcp-dev-mesh 
+    ```
+    and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
+
+    ```bash
+    oc config use-context rosa
+    oc apply -f rosa-prod/smp-gcp.yaml
+    oc apply -f rosa-prod/iss-gcp.yaml
+    ```
 
 1. Check federation and import status on ROSA
 ```bash
