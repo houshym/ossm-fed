@@ -455,7 +455,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
 1. Enabling federation for rosa-prod-mesh    
     ```bash
     oc config use-context rosa
-    oc oc create configmap gcp-dev-mesh-ca-root-cert -n rosa-prod-mesh --from-literal=root-cert.pem="$GCP_DEV_MESH_CERT"
+    oc create configmap gcp-dev-mesh-ca-root-cert -n rosa-prod-mesh --from-literal=root-cert.pem="$GCP_DEV_MESH_CERT"
     ```
 
     find rog ingress load balancer IP address/FQDN
