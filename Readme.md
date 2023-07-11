@@ -246,10 +246,10 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
 
 3. Check operators status. if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) with the following command or run this [script](./ossm-operator/check-ossm.sh):   
     ```bash
-    oc get sub elasticsearch-operator -n openshift-operators-redhat --output jsonpath='{.status.conditions[*].message}'
+    oc get sub elasticsearch-operator -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
     ```
     ```bash
-    oc get sub jaeger-product  -n openshift-distributed-tracing --output jsonpath='{.status.conditions[*].message}'
+    oc get sub jaeger-product  -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
     ```
     ```bash
     oc get sub kiali-ossm  -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
