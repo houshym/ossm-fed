@@ -1,7 +1,14 @@
 ## A guide to creating a true hybrid/multi-cloud architecture with OSSM federation
 
 
-In this blog, we will discuss different aspects of multi-cloud and multi-cluster Kubernetes strategies. We will show how you can build a Hybrid/multi-cloud architectures with Red Hat OpenShift and OpenShift Service Mesh(OSSM) federation. The typical use case for this architecture can be Businss continuity, cloud migration, cost optimization, burst wrokload
+In this blog, we will discuss different aspects of multi-cloud and multi-cluster Kubernetes strategies. We will show how you can build a Hybrid/multi-cloud architectures with Red Hat OpenShift and OpenShift Service Mesh(OSSM) federation. The typical use case for this architecture can be:
+  - Businss continuity
+  - Workload migration
+  - Cost optimization
+  - Burst wrokload
+  - Compliance requirement 
+  - Workload Optimization
+  - ...
 
 
 ## Multi/Hybrid Cloud Strategy
