@@ -363,12 +363,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     oc apply -f aro-stg/smp.yaml
     oc apply -f aro-stg/ess.yaml
     ```    
-1. Config VirtualService for rosa-prod-mesh
-    
-    ```bash
-    oc config use-context rosa
-    oc apply -n prod-bookinfo -f rosa-prod/vs-split-details.yaml
-    ```    
+
 1. Check federation status
    
     ```bash
@@ -392,7 +387,22 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
    
     ```bash
     oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json -o jsonpath='{.status}'
+   ```
+1. Config VirtualService for rosa-prod-mesh
+    
+    ```bash
+    oc config use-context rosa
+    oc apply -n prod-bookinfo -f rosa-prod/vs-split-details.yaml
+    ```    
+at this stage, you can generate a load and check Kiali dashboard
+    ```bash
+    oc config use-context rosa
+    log "Installing VirtualService for rosa-prod-mesh"
+    oc apply -n prod-bookinfo -f rosa-prod/vs-split-details-prod-stg-dev.yaml
+    BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
+    while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
     ```
+![ROSA-ARO federation](./images/kiali-rosa-aro.png)   
 ### Create federation between ROSA and ROG
     
 1. Create a service mesh instance on ROG
