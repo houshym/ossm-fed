@@ -86,9 +86,9 @@ spec:
             labels:
               federation.maistra.io/ingress-for: gcp-dev-mesh
           ports:
-          - port: 15444
+          - port: 15443
             name: tls
-          - port: 8189
+          - port: 8188
             name: https-discovery  #note HTTPS here
   security:
     identity:
