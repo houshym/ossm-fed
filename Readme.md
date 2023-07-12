@@ -419,7 +419,6 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
 oc apply -f gcp-dev/dev-detail-v3-deployment.yaml
 oc apply -f gcp-dev/dev-detail-v3-service.yaml
 ``` 
-### Create Federtion between ROSA and ROG
 
 1. Retrieving ROSA Istio CA Root certificates**
     
@@ -428,14 +427,14 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
      #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
     ```
-1. Retrieving ROSA Istio CA Root certificates
+2. Retrieving ROG Istio CA Root certificates
     
     ```bash
     oc config use-context rog
     GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
     #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
 
-1. Enabling federation for gcp-dev-mesh
+3. Enabling federation for gcp-dev-mesh
 
     ```bash  
     echo "Enabling federation for rosa-prod-mesh" 
@@ -454,7 +453,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     oc apply -f gcp-dev/smp.yaml
     oc apply -f gcp-dev/ess.yaml
     ```
-1. Enabling federation for rosa-prod-mesh    
+4. Enabling federation for rosa-prod-mesh    
     ```bash
     oc config use-context rosa
     oc create configmap gcp-dev-mesh-ca-root-cert -n rosa-prod-mesh --from-literal=root-cert.pem="$GCP_DEV_MESH_CERT"
@@ -474,7 +473,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     oc apply -f rosa-prod/iss-gcp.yaml
     ```
 
-1. Check federation and import status on ROSA
+5. Check federation and import status on ROSA
 ```bash
 oc config use-context rosa
 oc -n rosa-prod-mesh get servicemeshpeer gcp-dev-mesh -o json -o jsonpath='{.status}'
@@ -492,6 +491,8 @@ oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
 To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
 ```bash
 oc config use-context rosa
+log "Installing VirtualService for rosa-prod-mesh"
+oc apply -n prod-bookinfo -f rosa-prod/vs-split-details-prod-stg-dev.yaml
 BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
 while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
 ```
@@ -500,3 +501,6 @@ open Kiali console and check the graph
 
 
 ![Federation](./images/kiali.png)
+
+
+
