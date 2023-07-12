@@ -66,22 +66,22 @@ Multi-cloud and multi-cluster Kubernetes strategies will continue to gain popula
 
 There are several methods to architect an application on multiple Kubernetes clusters, The two common app architectures in multi-cluster Kubernetes environments are:
 
-1.  Split architecture: Different components of an application are deployed to different clusters based on factors such as resource requirements, scaling needs, security, data locality and other factors. This enables better resource utilization and isolation of different parts of the Application.
+1.  **Split architecture:** Different components of an application are deployed to different clusters based on factors such as resource requirements, scaling needs, security, data locality and other factors. This enables better resource utilization and isolation of different parts of the Application.
     
-1.  Replicated: This involves deploying identical copies of the application across multiple clusters, each serving a specific geographic region or customer base, providing high availability and disaster recovery capabilities.
+1.  **Replicated:** This involves deploying identical copies of the application across multiple clusters, each serving a specific geographic region or customer base, providing high availability and disaster recovery capabilities.
 
 Red Hat OpenShift is a comprehensive and scalable application platform for deploying and managing applications in Kubernetes clusters, including support for hybrid and multi-cloud environments. It provides a consistent development and deployment environment, as well as enterprise-grade security and manageability features.
-1.  Scalability: OpenShift provides a scalable and flexible platform for deploying and managing applications, making it easier for organizations to scale up and down as needed.
+1.  **Scalability:** OpenShift provides a scalable and flexible platform for deploying and managing applications, making it easier for organizations to scale up and down as needed.
     
-1.  Improved security: OpenShift includes built-in security features and integrations with various security tools, which can help organizations to secure their applications and data in the cloud.
+1.  **Improved security:** OpenShift includes built-in security features and integrations with various security tools, which can help organizations to secure their applications and data in the cloud.
     
-1.  Increased efficiency: OpenShift provides a consistent environment for development, testing, and production, which can help organizations to streamline their processes and increase efficiency.
+1.  **Increased efficiency:** OpenShift provides a consistent environment for development, testing, and production, which can help organizations to streamline their processes and increase efficiency.
     
-1.  Hybrid and multi-cloud support: OpenShift supports multiple clouds, including on-premises, private cloud, and public cloud environments, making it easier for organizations to adopt a hybrid or multi-cloud strategy.
+1.  **Hybrid and multi-cloud support:** OpenShift supports multiple clouds, including on-premises, private cloud, and public cloud environments, making it easier for organizations to adopt a hybrid or multi-cloud strategy.
     
-1.  Ease of integration: OpenShift provides a common platform for integrating with various tools and technologies, which can help organizations to simplify their processes and increase collaboration.
+1.  **Ease of integration:** OpenShift provides a common platform for integrating with various tools and technologies, which can help organizations to simplify their processes and increase collaboration.
     
-1.  Enterprise-grade features: OpenShift includes features and support for enterprise-grade applications, such as high availability, disaster recovery, and scalability, which can help organizations to meet the demands of their business-critical applications.
+1.  **Enterprise-grade features:** OpenShift includes features and support for enterprise-grade applications, such as high availability, disaster recovery, and scalability, which can help organizations to meet the demands of their business-critical applications.
     
 ## Connecting clusters
 
