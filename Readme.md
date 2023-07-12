@@ -244,7 +244,7 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
 
     ```
 
-3. Check operators status in each cluster with the following command or run this [script](./ossm-operator/check-ossm.sh). if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) :   
+3. Check operators status in each cluster with the following commands or run this [script](./ossm-operator/check-ossm.sh). if you need troubleshooting follow the [troubleshooting operator](https://docs.openshift.com/container-platform/4.12/support/troubleshooting/troubleshooting-operator-issues.html) :   
     ```bash
     oc get sub elasticsearch-operator -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
     ```
