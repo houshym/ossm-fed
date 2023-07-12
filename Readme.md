@@ -292,9 +292,16 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```
 
 ## Deploy Application
-We use famous bookinfo applications and we deploy all microservice on ROSA but we deploy different version of details microservice on ARO and ROG to show the federation. This deployment can be use for migration, DR, bursting, ...
+We use famous bookinfo applications and 
 
-![bookinfo app](./images/bookinfo.png)
+![bookinfo app](./images/bookinfo-component.png)
+
+we deploy all microservice on ROSA but we deploy different version of details microservice on ARO and ROG to show the federation. 
+
+![details microservice](./images/details-federated.png)
+
+This deployment can be use for Cloud migration, DR, Cost optimization and,...
+
 ### Deploy application on ROSA cluster
     
  ```bash
