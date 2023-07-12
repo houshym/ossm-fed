@@ -12,3 +12,6 @@ oc config use-context rog
 oc delete project gcp-dev-mesh
 oc delete project dev-bookinfo
 oc delete -f ./ossm-operator/ossm.yaml
+
+echo "if you want to delete the operators run the following command"
+echo "oc delete csv <csv-name>"
