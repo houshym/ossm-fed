@@ -491,6 +491,7 @@ oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
  ## federation in action
 To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
 ```bash
+oc config use-context rosa
 BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
 while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
 ```
