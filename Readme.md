@@ -333,7 +333,6 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     
     ```bash
     oc config use-context rosa
-    echo "Enabling federation for rosa-prod-mesh"
     oc create configmap aro-stg-mesh-ca-root-cert --from-literal=root-cert.pem="$ARO_STG_MESH_CERT" -n rosa-prod-mesh
     ```
     find ARO ingress load balancer IP address/FQDN  
@@ -351,7 +350,6 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
 1. Enabling Federation for aro-stg-mesh
     ```bash
     oc config use-context aro
-    echo "Enabling federation for aro-stg-mesh"
     oc create configmap rosa-prod-mesh-ca-root-cert  --from-literal=root-cert.pem="$ROSA_PROD_MESH_CERT" -n aro-stg-mesh
     ```
     find ROSA ingress load balancer IP address/FQDN  
