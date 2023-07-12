@@ -367,8 +367,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     
     ```bash
     oc config use-context rosa
-    echo "Installing VirtualService for rosa-prod-mesh"
-    oc apply -n prod-bookinfo -f rosa-prod/vs-mirror-details.yaml
+    oc apply -n prod-bookinfo -f rosa-prod/vs-split-details.yaml
     ```    
 1. Check federation status
    
@@ -425,19 +424,18 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rosa
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
-     #PROD_MESH_CERT=$(echo "$PROD_MESH_CERT" | tr -d '\n')
+
     ```
 2. Retrieving ROG Istio CA Root certificates
     
     ```bash
     oc config use-context rog
     GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
-    #STAGE_MESH_CERT=$(echo "$STAGE_MESH_CERT" | tr -d '\n')
+    ```
 
 3. Enabling federation for gcp-dev-mesh
 
-    ```bash  
-    echo "Enabling federation for rosa-prod-mesh" 
+    ```bash   
     oc create configmap rosa-prod-mesh-ca-root-cert -n gcp-dev-mesh --from-literal=root-cert.pem="$ROSA_PROD_MESH_CERT"
     ```
 
