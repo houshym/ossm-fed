@@ -1,9 +1,0 @@
---- 
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: gcp-dev-mesh-ca-root-cert
-  namespace: rosa-prod-mesh
-data:
-  root-cert.pem: |-
-    {{GCP_DEV_MESH_CERT}}

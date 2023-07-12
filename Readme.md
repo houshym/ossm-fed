@@ -257,15 +257,14 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
     ```bash
     oc get sub servicemeshoperator -n openshift-operators --output jsonpath='{.status.conditions[*].message}'
     ```
-
-4. Create a service mesh instance in each cluster
-   
-     **Note:** you can use all-in-one scritps to deploy a service mesh instance and create a federation between clusters
+     **Note:** You can use all-in-one scripts to deploy a service mesh instance and create a federation between clusters. Once you have run these scripts, you should proceed to the "federation in action" section. However, it's important to note that after running the scripts, you need to update the ServiceMeshPeer objects in each cluster( we have two servicemeshpeer object in rosa cluster and one in aro and rog). Specifically, you should replace the addresses in the `spec.remote.addresses`` field with the IP address of the ingress load balancer. This step is crucial to achieve proper communication and connectivity between the clusters. 
 
      - [create federated mesh between ROSA and ARO and deploy app](./rosa-aro-fed.sh)
 
-     - [create federated mesh between ROSA and ROG and deploy app](./rosa-rog-fed.sh) 
-    
+     - [create federated mesh between ROSA and ROG and deploy app](./rosa-rog-fed.sh)
+
+4. Create a service mesh instance in each cluster
+        
     **ROSA cluster**
     ```bash
     oc config use-context rosa
@@ -495,7 +494,7 @@ oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh -o json -o jsonpath='{.sta
 oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
 ```
   
- ## federation in action
+ ## Federation in action
 To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
 ```bash
 oc config use-context rosa
