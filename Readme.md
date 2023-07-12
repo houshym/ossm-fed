@@ -394,10 +394,10 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     oc config use-context rosa
     oc apply -n prod-bookinfo -f rosa-prod/vs-split-details.yaml
     ```    
-at this stage, you can generate a load and check Kiali dashboard
+1. at this stage, you can generate a load and check Kiali dashboard
+
     ```bash
     oc config use-context rosa
-    log "Installing VirtualService for rosa-prod-mesh"
     oc apply -n prod-bookinfo -f rosa-prod/vs-split-details-prod-stg-dev.yaml
     BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
     while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
@@ -499,7 +499,6 @@ oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
 To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
 ```bash
 oc config use-context rosa
-log "Installing VirtualService for rosa-prod-mesh"
 oc apply -n prod-bookinfo -f rosa-prod/vs-split-details-prod-stg-dev.yaml
 BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
 while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
