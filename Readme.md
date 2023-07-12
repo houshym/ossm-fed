@@ -45,7 +45,7 @@ However, it's important to note that multi-cluster Kubernetes environments can
 
 be complex and challenging to manage and require a significant investment in time, resources, and expertise.
 
-## Cons:
+### Cons:
 
 1.  **Complexity:** Multi-cloud can be complex to manage, with multiple cloud environments to maintain and multiple points of failure to consider.
 
@@ -370,22 +370,26 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     echo "Installing VirtualService for rosa-prod-mesh"
     oc apply -n prod-bookinfo -f rosa-prod/vs-mirror-details.yaml
     ```    
-2. Check federation status
+1. Check federation status
    
     ```bash
+    oc config use-context rosa
     oc -n rosa-prod-mesh get servicemeshpeer aro-stg-mesh -o json -o jsonpath='{.status}'
+
     ```   
-3. Check connection status on aro-stg-mesh
-   
-    ```bash
-    oc -n aro-stg-mesh get servicemeshpeer rosa-prod-mesh -o json -o jsonpath='{.status}'
-    ``` 
-4. check service imported to into rosa-prod-mesh
+1. check service imported to into rosa-prod-mesh
    
     ```bash
     oc -n rosa-prod-mesh get importedservicesets aro-stg-mesh -o json -o jsonpath='{.status}'
     ```
-5. check if services from aro-stg-mesh are exported
+1. Check connection status on aro-stg-mesh
+   
+    ```bash
+    oc config use-context aro
+    oc -n aro-stg-mesh get servicemeshpeer rosa-prod-mesh -o json -o jsonpath='{.status}'
+    ``` 
+
+1. check if services from aro-stg-mesh are exported
    
     ```bash
     oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json -o jsonpath='{.status}'
