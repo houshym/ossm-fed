@@ -9,7 +9,7 @@ metadata:
 spec:
   remote:
     addresses:
-    - gcp-dev-ingress
+    - gcp-dev-ingress-url
     servicePort: 15443
     discoveryPort: 8188
   gateways:
