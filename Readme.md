@@ -465,8 +465,8 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
     oc config use-context rog
-    SMP_ROG_YAML=$(cat rosa-prod/smp-aro.yaml | sed "s/aro-stg-ingress-url/$ROSA_DEV_INGRESS/g")
-echo $SMP_ROG_YAML | oc apply -f -
+    SMP_ROG_YAML=$(cat gcp-dev/smp.yaml | sed "s/rosa-prod-ingress-url/$ROSA_DEV_INGRESS/g")
+    echo $SMP_ROG_YAML | oc apply -f -
     oc apply -f gcp-dev/smp.yaml
     oc apply -f gcp-dev/ess.yaml
     ```
@@ -480,13 +480,14 @@ echo $SMP_ROG_YAML | oc apply -f -
 
     ```bash
     oc config use-context rog
-    oc get svc rosa-prod-ingress -n gcp-dev-mesh 
+    export ROG_ROSA_PROD_INGRESS=$(oc get svc rosa-prod-ingress -n gcp-dev-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
 
     ```bash
     oc config use-context rosa
-    oc apply -f rosa-prod/smp-gcp.yaml
+    SMP_ROSA_ROG_YAML=(cat /rosa-prod/smp-gcp.yaml | sed "s/gcp-dev-ingress-url/$ROG_ROSA_PROD_INGRESS/g")
+    echo $SMP_ROSA_ROG_YAML | oc apply -f -
     oc apply -f rosa-prod/iss-gcp.yaml
     ```
 
