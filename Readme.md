@@ -2,10 +2,10 @@
 
 
 In this blog, we will discuss different aspects of multi-cloud and multi-cluster Kubernetes strategies. We will show how you can build a Hybrid/multi-cloud architectures with Red Hat OpenShift and OpenShift Service Mesh(OSSM) federation. The typical use case for this architecture can be:
-  - Businss continuity
+  - Business continuity
   - Workload migration
   - Cost optimization
-  - Burst wrokload
+  - Burst workload
   - Compliance requirement 
   - Workload Optimization
   - ...
