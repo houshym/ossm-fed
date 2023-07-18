@@ -2,11 +2,11 @@
 
 
 In this blog, we will discuss different aspects of multi-cloud and multi-cluster Kubernetes strategies. We will show how you can build a Hybrid/multi-cloud architectures with Red Hat OpenShift and OpenShift Service Mesh(OSSM) federation. The typical use case for this architecture can be:
-  - Business continuity
-  - Workload migration
-  - Cost optimization
-  - Burst workload
-  - Compliance requirement 
+  - Business Continuity
+  - Workload Migration
+  - Cost Optimization
+  - Burst Workload
+  - Compliance Requirement 
   - Workload Optimization
   - ...
 
@@ -346,7 +346,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     use the EXTERNAL-IP and update addresses in ServiceMeshPeer object in smp-aro.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
     oc config use-context rosa
-    SMP_ARO_YAML=$(cat rosa-prod/smp-aro.yaml | sed "s/aro-stg-ingress/$ARO_STG_INGRESS/g")
+    SMP_ARO_YAML=$(cat rosa-prod/smp-aro.yaml | sed "s/aro-stg-ingress-url/$ARO_STG_INGRESS/g")
     echo $SMP_ARO_YAML | oc apply -f -
     oc apply -f rosa-prod/iss-aro.yaml
     ```
@@ -364,7 +364,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     - and use the EXTERNAL-IP and update the addresses in ServiceMeshPeer object in smp.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
     oc config use-context aro
-    SMP_PROD_YAML=$(cat aro-stg/smp.yaml | sed "s/rosa-prod-ingress/$ROSA_PROD_INGRESS/g")
+    SMP_PROD_YAML=$(cat aro-stg/smp.yaml | sed "s/rosa-prod-ingress-url/$ROSA_PROD_INGRESS/g")
     echo $SMP_PROD_YAML | oc apply -f -
     oc apply -f aro-stg/ess.yaml
     ```    
@@ -439,6 +439,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rosa
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
+    echo $ROSA_PROD_MESH_CERT | openssl x509 -subject -noout
 
     ```
 2. Retrieving ROG Istio CA Root certificates
@@ -446,6 +447,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rog
     GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
+    echo $GCP_DEV_MESH_CERT | openssl x509 -subject -noout
     ```
 
 3. Enabling federation for gcp-dev-mesh
@@ -458,11 +460,13 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
 
     ```bash
     oc config use-context rosa
-    oc get svc gcp-dev-ingress -n rosa-prod-mesh 
+    export ROG_DEV_INGRESS=$(oc get svc gcp-dev-ingress -n rosa-prod-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
     oc config use-context rog
+    SMP_ROG_YAML=$(cat rosa-prod/smp-aro.yaml | sed "s/aro-stg-ingress-url/$ROSA_DEV_INGRESS/g")
+echo $SMP_ROG_YAML | oc apply -f -
     oc apply -f gcp-dev/smp.yaml
     oc apply -f gcp-dev/ess.yaml
     ```
