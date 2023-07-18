@@ -494,15 +494,15 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
 5. Check federation and import status on ROSA
 ```bash
 oc config use-context rosa
-oc -n rosa-prod-mesh get servicemeshpeer gcp-dev-mesh -o json -o jsonpath='{.status}'
-oc -n rosa-prod-mesh get importedservicesets gcp-dev-mesh -o json -o jsonpath='{.status}'
+oc -n rosa-prod-mesh get servicemeshpeer gcp-dev-mesh  -o jsonpath='{.status}'
+oc -n rosa-prod-mesh get importedservicesets gcp-dev-mesh  -o jsonpath='{.status}'
 ```  
 
 1. Check federation and export status on ROG
 ```bash
 oc config use-context rog
-oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh -o json -o jsonpath='{.status}'
-oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o json | jq .status
+oc -n gcp-dev-mesh get servicemeshpeer rosa-prod-mesh  -o jsonpath='{.status}'
+oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o jsonpath='{.status}'
 ```
   
  ## Federation in action
