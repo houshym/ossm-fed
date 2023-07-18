@@ -373,25 +373,25 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
    
     ```bash
     oc config use-context rosa
-    oc -n rosa-prod-mesh get servicemeshpeer aro-stg-mesh -o json -o jsonpath='{.status}'
+    oc -n rosa-prod-mesh get servicemeshpeer aro-stg-mesh -o jsonpath='{.status}'
 
     ```   
 1. check service imported to into rosa-prod-mesh
    
     ```bash
-    oc -n rosa-prod-mesh get importedservicesets aro-stg-mesh -o json -o jsonpath='{.status}'
+    oc -n rosa-prod-mesh get importedservicesets aro-stg-mesh -o jsonpath='{.status}'
     ```
 1. Check connection status on aro-stg-mesh
    
     ```bash
     oc config use-context aro
-    oc -n aro-stg-mesh get servicemeshpeer rosa-prod-mesh -o json -o jsonpath='{.status}'
+    oc -n aro-stg-mesh get servicemeshpeer rosa-prod-mesh  -o jsonpath='{.status}'
     ``` 
 
 1. check if services from aro-stg-mesh are exported
    
     ```bash
-    oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o json -o jsonpath='{.status}'
+    oc -n aro-stg-mesh get exportedservicesets rosa-prod-mesh -o jsonpath='{.status}'
    ```
 1. Config VirtualService for rosa-prod-mesh
     
