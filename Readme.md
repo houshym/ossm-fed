@@ -118,9 +118,7 @@ Service mesh can indeed be a preferred method for connecting multiple Kubernetes
     
 3.  **Optimize Performance:** Service Mesh provides intelligent traffic routing and load balancing, helping to improve the performance of applications by reducing latency and increasing reliability.
     
-
 However, it's worth noting that service mesh also has some potential drawbacks, including increased operational complexity and the potential for increased resource utilization and latency due to proxy overhead. The right solution for a particular use case will depend on the specific requirements and trade-offs involved.
-
 
 However, it is important to keep in mind that a service mesh solution may not be the best fit for every customer, and that the specific requirements and trade-offs of each customer should be taken into account when choosing the best solution. In cases where a service mesh is not the best fit, VPN or VPC peering solutions may provide a simpler, more cost-effective option for network connectivity between clusters.
 
@@ -140,15 +138,13 @@ Interaction between meshes if facilitated through ingress and egress gateways, w
 All outbound service requests are terminated at a local egress gateway
 All inbound service requests are terminated at a local ingress gateway
 
-
-
 The following resources are used to configure the federation between two or more meshes.
 
-A ServiceMeshPeer resource declares the federation between a pair of service meshes.
+A [ServiceMeshPeer](https://docs.openshift.com/container-platform/4.11/service_mesh/v2x/ossm-federation.html#ossm-federation-create-peer_federation) resource declares the federation between a pair of service meshes.
 
-An ExportedServiceSet resource declares that one or more services from the mesh are available for use by a peer mesh.
+An [ExportedServiceSet](https://docs.openshift.com/container-platform/4.11/service_mesh/v2x/ossm-federation.html#ossm-federation-config-export_federation) resource declares that one or more services from the mesh are available for use by a peer mesh.
 
-An ImportedServiceSet resource declares which services exported by a peer mesh will be imported into the mesh.
+An [ImportedServiceSet](https://docs.openshift.com/container-platform/4.11/service_mesh/v2x/ossm-federation.html#ossm-federation-config-import_federation) resource declares which services exported by a peer mesh will be imported into the mesh.
 
 #### Prerequisites
 
@@ -311,7 +307,6 @@ This deployment can be use for Cloud migration, DR, Cost optimization and,...
  oc apply -n prod-bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.0/samples/bookinfo/networking/destination-rule-all.yaml
  ```
 
-
 ### Deploy application on ARO cluster
 
 ```bash
@@ -320,7 +315,6 @@ oc apply -f aro-stg/stage-detail-v2-deployment.yaml
 oc apply -f aro-stg/stage-detail-v2-service.yaml
 ```
 
-
 ### Create Federation between ARO and ROSA
 
 1. Retrieving ROSA Istio CA Root certificates    
@@ -328,12 +322,14 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     ```bash
     oc config use-context rosa
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
+    echo $ROSA_PROD_MESH_CERT | openssl x509 -subject -noout
     ```
 1. Retrieving ARO Istio CA Root certificates
     
     ```bash
     oc config use-context aro
     ARO_STG_MESH_CERT=$(oc get configmap -n aro-stg-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
+    echo $ARO_STG_MESH_CERT | openssl x509 -subject -noout
     ```
 1. Enabling federation for rosa-prod-mesh
     
@@ -344,13 +340,14 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     find ARO ingress load balancer IP address/FQDN  
     ```bash
     oc config use-context aro
-    oc get svc rosa-prod-ingress -n aro-stg-mesh 
-    
+    export ARO_STG_INGRESS=$(oc get svc rosa-prod-ingress -n aro-stg-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo $ARO_STG_INGRESS
     ```
-    use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp-aro.yaml ( spec.remote.addresses) and then apply the manifest
+    use the EXTERNAL-IP and update addresses in ServiceMeshPeer object in smp-aro.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
     oc config use-context rosa
-    oc apply -f rosa-prod/smp-aro.yaml
+    SMP_ARO_YAML=$(cat rosa-prod/smp-aro.yaml | sed "s/aro-stg-ingress/$ARO_STG_INGRESS/g")
+    echo $SMP_ARO_YAML | oc apply -f -
     oc apply -f rosa-prod/iss-aro.yaml
     ```
 1. Enabling Federation for aro-stg-mesh
@@ -358,15 +355,17 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     oc config use-context aro
     oc create configmap rosa-prod-mesh-ca-root-cert  --from-literal=root-cert.pem="$ROSA_PROD_MESH_CERT" -n aro-stg-mesh
     ```
-    find ROSA ingress load balancer IP address/FQDN  
+    - find ROSA ingress load balancer IP address/FQDN  
     ```bash
     oc config use-context rosa
-    oc get svc aro-stg-ingress -n rosa-prod-mesh
+    export ROSA_PROD_INGRESS=$(oc get svc aro-stg-ingress -n rosa-prod-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+    echo $ROSA_PROD_INGRESS
     ```
-    and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
+    - and use the EXTERNAL-IP and update the addresses in ServiceMeshPeer object in smp.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
     oc config use-context aro
-    oc apply -f aro-stg/smp.yaml
+    SMP_PROD_YAML=$(cat aro-stg/smp.yaml | sed "s/rosa-prod-ingress/$ROSA_PROD_INGRESS/g")
+    echo $SMP_PROD_YAML | oc apply -f -
     oc apply -f aro-stg/ess.yaml
     ```    
 
