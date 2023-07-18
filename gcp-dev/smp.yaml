@@ -6,7 +6,7 @@ metadata:
 spec:
   remote:
     addresses:
-    - rosa-prod-ingress
+    - rosa-prod-ingress-url
     discoveryPort: 8188
     servicePort: 15443
   gateways:

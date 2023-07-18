@@ -6,7 +6,7 @@ metadata:
 spec:
   remote:
     addresses:
-    - aro-stg-ingress
+    - aro-stg-ingress-url
     servicePort: 15443
     discoveryPort: 8188
   gateways:
