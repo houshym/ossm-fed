@@ -165,9 +165,9 @@ you need to rename context for each cluster with the following command
  oc config use-context <rosa's cluster context>
  oc config rename-context  <rosa's cluster context> rosa
  oc config use-context <aro's cluster context>
- oc config rename-context  <aro's cluster context> rosa
+ oc config rename-context  <aro's cluster context> aro
  oc config use-context <rog's cluster context>
- oc config rename-context  <rog's cluster context> rosa 
+ oc config rename-context  <rog's cluster context> rog 
 ```
 
 #### Deploy OpenShift Service Mesh on all clusters
