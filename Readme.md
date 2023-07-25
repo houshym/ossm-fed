@@ -8,7 +8,7 @@ In this blog, we will discuss different aspects of multi-cloud and multi-cluster
   - Burst Workload
   - Compliance Requirement 
   - Workload Optimization
-  - ...
+
 
 
 ## Multi/Hybrid Cloud Strategy
@@ -154,10 +154,21 @@ In this blog, we use 3 public clusters, but in a production environment, it is h
   - ARO (Azure Red Hat OpenShift) cluster
   - ROG (Red Hat OpenShift Dedicated on GCP) cluster
   
-**Note:** The scripts utilize three kubeconfig contexts, each with a specific purpose:
+**Note:** All the scripts utilize three kubeconfig contexts, each with a specific purpose:
   - rosa: to access to ROSA cluster   
   - aro:  to access to ARO cluster
   - rog:  to access to GCP cluster
+
+you need to rename context for each cluster with the following command
+```bash
+ oc config get-contexts
+ oc config use-context <rosa's cluster context>
+ oc config rename-context  <rosa's cluster context> rosa
+ oc config use-context <aro's cluster context>
+ oc config rename-context  <aro's cluster context> rosa
+ oc config use-context <rog's cluster context>
+ oc config rename-context  <rog's cluster context> rosa 
+```
 
 #### Deploy OpenShift Service Mesh on all clusters
 
@@ -340,7 +351,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     find ARO ingress load balancer IP address/FQDN  
     ```bash
     oc config use-context aro
-    export ARO_STG_INGRESS=$(oc get svc rosa-prod-ingress -n aro-stg-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    export ARO_STG_INGRESS=$(oc get svc rosa-prod-ingress -n aro-stg-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
     echo $ARO_STG_INGRESS
     ```
     use the EXTERNAL-IP and update addresses in ServiceMeshPeer object in smp-aro.yaml ( spec.remote.addresses) and then apply the manifest
@@ -460,14 +471,14 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
 
     ```bash
     oc config use-context rosa
-    export ROG_DEV_INGRESS=$(oc get svc gcp-dev-ingress -n rosa-prod-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    export ROG_DEV_INGRESS=$(oc get svc gcp-dev-ingress -n rosa-prod-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
     oc config use-context rog
-    SMP_ROG_YAML=$(cat gcp-dev/smp.yaml | sed "s/rosa-prod-ingress-url/$ROSA_DEV_INGRESS/g")
+    SMP_ROG_YAML=$(cat gcp-dev/smp.yaml | sed "s/rosa-prod-ingress-url/$_DEV_INGRESS/g")
     echo $SMP_ROG_YAML | oc apply -f -
-    oc apply -f gcp-dev/ess.yaml
+    oc apply -f gcp-dev/smp.yaml
     ```
 4. Enabling federation for rosa-prod-mesh    
     ```bash
@@ -479,13 +490,13 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
 
     ```bash
     oc config use-context rog
-    export ROG_ROSA_PROD_INGRESS=$(oc get svc rosa-prod-ingress -n gcp-dev-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+    export ROG_ROSA_PROD_INGRESS=$(oc get svc rosa-prod-ingress -n gcp-dev-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
 
     ```bash
     oc config use-context rosa
-    SMP_ROSA_ROG_YAML=(cat /rosa-prod/smp-gcp.yaml | sed "s/gcp-dev-ingress-url/$ROG_ROSA_PROD_INGRESS/g")
+    SMP_ROSA_ROG_YAML=$(cat rosa-prod/smp-gcp.yaml | sed "s/gcp-dev-ingress-url/$ROG_ROSA_PROD_INGRESS/g")
     echo $SMP_ROSA_ROG_YAML | oc apply -f -
     oc apply -f rosa-prod/iss-gcp.yaml
     ```
@@ -505,7 +516,7 @@ oc -n gcp-dev-mesh get exportedservicesets rosa-prod-mesh -o jsonpath='{.status}
 ```
   
  ## Federation in action
-To see , create some load in the bookinfo app in rosa-prod-mesh. For example:
+To see federation, create some load in the bookinfo app in rosa-prod-mesh. For example:
 ```bash
 oc config use-context rosa
 oc apply -n prod-bookinfo -f rosa-prod/vs-split-details-prod-stg-dev.yaml
