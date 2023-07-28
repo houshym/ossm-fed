@@ -487,11 +487,12 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     oc create configmap gcp-dev-mesh-ca-root-cert -n rosa-prod-mesh --from-literal=root-cert.pem="$GCP_DEV_MESH_CERT"
     ```
 
-    find rog ingress load balancer IP address/FQDN
+    find the rog ingress load balancer IP address/FQDN
 
     ```bash
     oc config use-context rog
     export ROG_ROSA_PROD_INGRESS=$(oc get svc rosa-prod-ingress -n gcp-dev-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo $ROG_ROSA_PROD_INGRESS
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
 
