@@ -333,14 +333,14 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     ```bash
     oc config use-context rosa
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
-    echo $ROSA_PROD_MESH_CERT | openssl x509 -subject -noout
+    echo "$ROSA_PROD_MESH_CERT" | openssl x509 -subject -noout
     ```
 1. Retrieving ARO Istio CA Root certificates
     
     ```bash
     oc config use-context aro
     ARO_STG_MESH_CERT=$(oc get configmap -n aro-stg-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
-    echo $ARO_STG_MESH_CERT | openssl x509 -subject -noout
+    echo "$ARO_STG_MESH_CERT" | openssl x509 -subject -noout
     ```
 1. Enabling federation for rosa-prod-mesh
     
@@ -458,7 +458,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rog
     GCP_DEV_MESH_CERT=$(oc get configmap -n gcp-dev-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
-    echo $GCP_DEV_MESH_CERT | openssl x509 -subject -noout
+    echo "$GCP_DEV_MESH_CERT" | openssl x509 -subject -noout
     ```
 
 3. Enabling federation for gcp-dev-mesh
@@ -477,7 +477,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rog
     SMP_ROG_YAML=$(cat gcp-dev/smp.yaml | sed "s/rosa-prod-ingress-url/$_DEV_INGRESS/g")
-    echo $SMP_ROG_YAML | oc apply -f -
+    echo "$SMP_ROG_YAML" | oc apply -f -
     oc apply -f gcp-dev/smp.yaml
     ```
 4. Enabling federation for rosa-prod-mesh    
@@ -497,7 +497,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rosa
     SMP_ROSA_ROG_YAML=$(cat rosa-prod/smp-gcp.yaml | sed "s/gcp-dev-ingress-url/$ROG_ROSA_PROD_INGRESS/g")
-    echo $SMP_ROSA_ROG_YAML | oc apply -f -
+    echo "$SMP_ROSA_ROG_YAML" | oc apply -f -
     oc apply -f rosa-prod/iss-gcp.yaml
     ```
 
