@@ -392,7 +392,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     ```bash
     oc -n rosa-prod-mesh get importedservicesets aro-stg-mesh -o jsonpath='{.status}'
     ```
-1. Check connection status on aro-stg-mesh
+1. Check federation status on aro-stg-mesh
    
     ```bash
     oc config use-context aro
@@ -472,6 +472,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rosa
     export ROG_DEV_INGRESS=$(oc get svc gcp-dev-ingress -n rosa-prod-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+    echo $ROG_DEV_INGRESS
     ```
     and use the EXTERNAL-IP and  update adressess in ServiceMeshPeer object  in smp.yaml ( spec.remote.addresses) and then apply the manifest
     ```bash
