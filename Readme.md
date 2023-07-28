@@ -358,7 +358,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     ```bash
     oc config use-context rosa
     SMP_ARO_YAML=$(cat rosa-prod/smp-aro.yaml | sed "s/aro-stg-ingress-url/$ARO_STG_INGRESS/g")
-    echo $SMP_ARO_YAML | oc apply -f -
+    echo "$SMP_ARO_YAML" | oc apply -f -
     oc apply -f rosa-prod/iss-aro.yaml
     ```
 1. Enabling Federation for aro-stg-mesh
@@ -376,7 +376,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     ```bash
     oc config use-context aro
     SMP_PROD_YAML=$(cat aro-stg/smp.yaml | sed "s/rosa-prod-ingress-url/$ROSA_PROD_INGRESS/g")
-    echo $SMP_PROD_YAML | oc apply -f -
+    echo "$SMP_PROD_YAML" | oc apply -f -
     oc apply -f aro-stg/ess.yaml
     ```    
 
@@ -450,7 +450,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     ```bash
     oc config use-context rosa
     ROSA_PROD_MESH_CERT=$(oc get configmap -n rosa-prod-mesh istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}')
-    echo $ROSA_PROD_MESH_CERT | openssl x509 -subject -noout
+    echo "$ROSA_PROD_MESH_CERT" | openssl x509 -subject -noout
 
     ```
 2. Retrieving ROG Istio CA Root certificates
