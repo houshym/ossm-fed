@@ -184,16 +184,6 @@ Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift El
 2. Install service mesh operators on each cluster by applying the following snippet on each cluster or use the this `./ossm-operator/deploy-ossm.sh`
     ```bash
     cat << EOF | oc apply -f -
-    apiVersion: v1
-    kind: Namespace
-    metadata:
-      name: openshift-operators-redhat
-    ---
-    apiVersion: v1
-    kind: Namespace
-    metadata:
-      name: openshift-distributed-tracing
-    ---
     # installing elastic search operator
     #Create a Subscription to subscribe the openshift-operators namespace 
     # to the OpenShift Elasticsearch Operator
