@@ -342,7 +342,7 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
     find ARO ingress load balancer IP address/FQDN  
     ```bash
     oc config use-context aro
-    export ARO_STG_INGRESS=$(oc get svc rosa-prod-ingress -n aro-stg-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+    export ARO_STG_INGRESS=$(oc get svc rosa-prod-ingress -n aro-stg-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     echo $ARO_STG_INGRESS
     ```
     use the EXTERNAL-IP and update addresses in ServiceMeshPeer object in smp-aro.yaml ( spec.remote.addresses) and then apply the manifest
