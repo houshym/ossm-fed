@@ -175,7 +175,8 @@ you need to rename context for each cluster with the following command
 Installing the OSSM(OpenShift Service Mesh) involves installing the OpenShift Elasticsearch, Jaeger, Kiali, and Service Mesh Operators, creating and managing a ServiceMeshControlPlane resource to deploy the control plane, and creating a ServiceMeshMemberRoll resource to specify the namespaces associated with the Service Mesh
 1. Clone the repository
     ```bash
-    Git clone https://github.com/houshym/ossm-fed.git
+    git clone https://github.com/houshym/ossm-fed.git
+    cd ossm-fed
     ```
     
     **Note:** if service mesh already installed go to step 4
