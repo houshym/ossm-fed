@@ -469,7 +469,7 @@ oc apply -f gcp-dev/dev-detail-v3-service.yaml
     oc config use-context rog
     SMP_ROG_YAML=$(cat gcp-dev/smp.yaml | sed "s/rosa-prod-ingress-url/$ROG_DEV_INGRESS/g")
     echo "$SMP_ROG_YAML" | oc apply -f -
-    oc apply -f gcp-dev/smp.yaml
+    oc apply -f gcp-dev/ess.yaml
     ```
 4. Enabling federation for rosa-prod-mesh    
     ```bash
