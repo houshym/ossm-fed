@@ -405,7 +405,6 @@ oc apply -f aro-stg/stage-detail-v2-service.yaml
 
     ```bash
     oc config use-context rosa
-    oc apply -n prod-bookinfo -f rosa-prod/vs-split-details-prod-stg-dev.yaml
     BOOKINFO_URL=$(oc -n rosa-prod-mesh get route istio-ingressgateway -o json | jq -r .spec.host)
     while true; do sleep 1; curl http://${BOOKINFO_URL}/productpage &> /dev/null; done
     ```
